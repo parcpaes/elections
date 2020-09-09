@@ -26,9 +26,9 @@ const Circunscripcion = mongoose.model('Circunscripcion',circunscripcionSchema);
 
 function validateCircunscripcion(circunscripcion) {
     const schema = Joi.object({
-      name: Joi.string().min(5).max(50).required()      
-      departamentoId: Joi.objectId().required(),
-      //provincias: Joi.array().min(1).required()
+      name: Joi.string().min(5).max(50).required(),
+      departamentoId: Joi.objectId().required()
+      //provincias: Joi.array().min(1).requgitired()
     });  
     return schema.validate(circunscripcion);
   }
