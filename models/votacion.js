@@ -24,20 +24,11 @@ const votacionSchema = new mongoose.Schema({
         minlength:5,
         maxlength:255
     },
-    // empadronados:{
-    //     type:Number,
-    //     min:1,
-    //     max:1024,
-    //     required:true
-    // }
-    // acta
-    // tiempoApertura:{
-    //     type:Date,
-    //     //required:true
-    // },
-    mesa:{
-        type:mesaSchema,
-        //required:true
+    numeroMesa:{
+        type:String,
+        required:true,
+        minlength:4,
+        maxlength:255
     },
     departamento:{
         type:departamentoSchema,
@@ -82,7 +73,7 @@ function validateVocacion(partido) {
         localidadId: Joi.objectId().required(),
         recintoId: Joi.objectId().required(),
         partidoId: Joi.objectId().required(),
-        mesaId: Joi.objectId().required()
+        numeroMesa: Joi.string().min(4).max(250).required()
     });
 
     return schema.validate(partido);
