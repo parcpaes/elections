@@ -29,7 +29,7 @@ const recintoSchema = new mongoose.Schema({
     localizacion:[
         {
             type:[Number],
-            unique:true       
+            unique:true
         }
     ]
 });
