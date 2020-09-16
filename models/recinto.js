@@ -12,24 +12,24 @@ const recintoSchema = new mongoose.Schema({
     },
     tipo:{
         type:[String],
+        enum:["Uninominal","Especial"],
+        required:true
+    },
+    numeroMesas:{
+        type:[String],
         required:true
     },
     municipio:{
         type: municipioSchema,
         //required:true
-    },    
+    },
     localidad:{
         type:localidadSchema
     },
-    //WG84-argis
     localizacion:[
         {
-            type:Number,
-            nombre:'latitud'
-        },
-        {
-            type:Number,
-            nombre:'longitud'
+            type:[Number],
+            unique:true       
         }
     ]
 });
@@ -39,7 +39,8 @@ const Recinto = mongoose.model('Recinto',recintoSchema);
 function validateRecinto(recinto) {
     const schema = Joi.object({
       institucion: Joi.string().min(4).max(255).required(),
-      tipo: Joi.array().items().min(1).required()
+      tipo: Joi.array().items().min(1).required(),
+      numeroMesas: Joi.array().items().min(1).required()
     });
 
     return schema.validate(recinto);
