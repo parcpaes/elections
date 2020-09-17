@@ -1,3 +1,5 @@
+const admin = require('../middleware/admin-middleware');
+const auth = require('../middleware/auth-middleware');
 const {Recinto, validate} = require('../models/recinto');
 const express = require('express');
 const router = express.Router();
@@ -15,6 +17,7 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
+  
   const { error } = validate(req.body); 
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -46,7 +49,7 @@ router.put('/:id', async (req, res) => {
   res.send(recinto); 
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', [auth,admin],async (req, res) => {
     const recinto = await Recinto.findByIdAndRemove(req.params.id);  
     if (!recinto) return res.status(404).send('The recinto with the given ID was not found.');    
 

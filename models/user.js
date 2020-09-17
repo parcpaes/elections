@@ -2,13 +2,23 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const Joi = require('joi');
 const mongoose = require('mongoose');
+const { boolean } = require('joi');
 
+const roles = ['Admin','Operador','Control','Reportes'];
 const userSchema = new mongoose.Schema({
     name:{
         type: String,
         required:true,
-        minlength:3,
+        minlength:5,
         maxlength:50,
+        unique:true
+    },
+    fullName:{
+        type: String,
+        required:true,
+        minlength:5,
+        maxlength:50,
+        unique:true
     },
     telefono:{
         type:Number,
@@ -24,22 +34,30 @@ const userSchema = new mongoose.Schema({
         maxlength:1024
     },
     rol:{
-        type:[String],
-        enum:['Admin','Operador','jefe-recinto']
+        type:String,
+        enum:roles,
+        required:true
+    },
+    state:{
+        type: Boolean,
+        required:true
     }
 });
 
 userSchema.methods.generateAuthToken = function(){
-    return jwt.sign({_id: this._id, isAdmin: this.isAdmin},config.get('jwtPrivateKey'));
+    return jwt.sign({_id: this._id, rol: this.rol },config.get('jwtPrivateKey'));
 }
 
 const User = mongoose.model('User',userSchema);
 
 function validateUser(user){    
     const schema = Joi.object({
-        name: Joi.string().min(3).required(),
-        email: Joi.number().min(5).max(255).required(),
-        telefono: Joi.string().min(5).max(255).required()
+        name: Joi.string().min(4).max(255).required(),
+        fullName: Joi.string().min(5).max(255).required(),
+        telefono: Joi.string().min(5).max(255).required(),
+        password: Joi.string().min(5).max(255).required(),
+        rol: Joi.string().valid(...roles).required(),
+        state: Joi.boolean().required()
     });
     return schema.validate(user);
 }

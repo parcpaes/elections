@@ -21,7 +21,7 @@ router.post('/', async (req, res) => {
   const isLocalidad = await Localidad.findOne({name: req.body.name});
   if(isLocalidad) return res.status(400).send('Localidad already register');
 
-  const localidad = new Localidad({    
+  const localidad = new Localidad({
     name: req.body.name    
   });
   
