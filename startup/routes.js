@@ -1,5 +1,7 @@
 const express = require('express');
+
 const departamento_route = require('../routes/departamento-route');
+const circunscripcion_route = require('../routes/circunscripcion-route');
 const provincia_route = require('../routes/provincia-route');
 const municipio_route = require('../routes/municipio-route');
 const localidad_route = require('../routes/localidad-route');
@@ -15,6 +17,7 @@ module.exports = function(app){
     app.use('/api/auth',auth_route);
     app.use('/api/users',user_route);
     app.use('/api/departamentos', departamento_route);     
+    app.use('/api/circunscripcions', circunscripcion_route);
     app.use('/api/provincias', provincia_route);
     app.use('/api/municipios',municipio_route);
     app.use('/api/localidades',localidad_route);

@@ -5,7 +5,8 @@ const router = express.Router();
 
 
 router.get('/', async (req, res) => {
-    const provincia = await Provincia.find().sort('name');
+    const provincia = await Provincia.find().sort('name')
+        .populate("circunscripcions","_id name");
   res.send(provincia);
 });
 

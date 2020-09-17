@@ -7,10 +7,10 @@ const app = express();
 app.use(cors());
 
 //require('./startup/logging');
+require('./startup/validation');
 require('./startup/routes')(app);
 require('./startup/db')();
 require('./startup/config-jwt')()
-require('./startup/validation');
 
 const port = process.env.PORT || 3000;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
