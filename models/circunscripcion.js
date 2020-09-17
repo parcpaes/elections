@@ -1,4 +1,5 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const {departamentoSchema} = require('./departamento');
 const {provinciaSchema} = require('./provincia');
@@ -7,8 +8,8 @@ const circunscripcionSchema = new mongoose.Schema({
     name:{
         type:String,
         required:true,
-        minlength:4,
-        maxlength:50
+        minlength:3,
+        maxlength:50,        
     },
     departamento:{
         type: departamentoSchema,
@@ -17,7 +18,8 @@ const circunscripcionSchema = new mongoose.Schema({
     provincias:[
         {
             type: mongoose.Schema.Types.ObjectId,
-            ref:'Provincia'
+            ref:'Provincia',
+            required:true,
         }
     ]
 });
@@ -26,10 +28,10 @@ const Circunscripcion = mongoose.model('Circunscripcion',circunscripcionSchema);
 
 function validateCircunscripcion(circunscripcion) {
     const schema = Joi.object({
-      name: Joi.string().min(5).max(50).required(),
-      departamentoId: Joi.objectId().required()
-      //provincias: Joi.array().min(1).requgitired()
-    });  
+      name: Joi.string().min(3).max(50).required(),
+      departamentoId: Joi.objectId().required(),
+      provincias: Joi.array().items(Joi.objectId()).required()
+    });
     return schema.validate(circunscripcion);
   }
 
