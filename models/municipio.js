@@ -1,4 +1,5 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const provinciaSchema = require('./provincia');
 
@@ -11,7 +12,7 @@ const municipioSchema = new mongoose.Schema({
     },
     provincia:{
       type: provinciaSchema,
-      //required: true
+      required: true
     }
 });
 
@@ -19,7 +20,8 @@ const Municipio = mongoose.model('Municipio',municipioSchema);
 
 function validateMunicipio(municipio) {
     const schema = Joi.object({
-      name: Joi.string().min(5).max(100).required()      
+      name: Joi.string().min(4).max(100).required(),
+      provinciaId: Joi.objectId().required()
     });
   
     return schema.validate(municipio);

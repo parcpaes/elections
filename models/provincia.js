@@ -28,5 +28,5 @@ function validateProvincia(provincia) {
   }
 
   module.exports.Provincia = Provincia;
-  exports.validate = validateProvincia;
+  module.exports.validate = validateProvincia;
   module.exports.provinciaSchema = provinciaSchema;

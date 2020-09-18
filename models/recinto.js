@@ -1,7 +1,9 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const {municipioSchema} = require('./municipio');
 const {localidadSchema} = require('./localidad');
+const typeElection = ["Uninominal","Especial"];
 
 const recintoSchema = new mongoose.Schema({
     institucion:{
@@ -12,16 +14,18 @@ const recintoSchema = new mongoose.Schema({
     },
     tipo:{
         type:[String],
-        enum:["Uninominal","Especial"],
+        enum:typeElection,
         required:true
     },
     numeroMesas:{
-        type:[String],
-        required:true
+        type:Number,
+        required:true,
+        min:1,
+        max:1024
     },
     municipio:{
         type: municipioSchema,
-        //required:true
+        required:true
     },
     localidad:{
         type:localidadSchema
@@ -34,13 +38,17 @@ const recintoSchema = new mongoose.Schema({
     ]
 });
 
+
+
 const Recinto = mongoose.model('Recinto',recintoSchema);
 
 function validateRecinto(recinto) {
     const schema = Joi.object({
       institucion: Joi.string().min(4).max(255).required(),
-      tipo: Joi.array().items().min(1).required(),
-      numeroMesas: Joi.array().items().min(1).required()
+      tipo: Joi.array().items(Joi.string().valid(...typeElection)).min(1).required(),
+      numeroMesas: Joi.number().min(1).max(1024).required(),
+      municipioId: Joi.objectId().required(),
+      localidadId: Joi.objectId().required()
     });
 
     return schema.validate(recinto);
