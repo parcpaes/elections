@@ -51,6 +51,9 @@ router.put('/:id', async (req, res) => {
     console.log(req.body);
     if (error) return res.status(400).send(error.details[0].message);
 
+    const isRecinto = await Recinto.findOne({name: req.params.id});
+    if(!isRecinto) return res.status(400).send('Recinto is not found');
+
     const municipio = await Municipio.findOne({_id: req.body.municipioId});
     if(!municipio) return res.status(400).send('Municipio was not found');
 
