@@ -7,6 +7,7 @@ const municipio_route = require('../routes/municipio-route');
 const localidad_route = require('../routes/localidad-route');
 const recinto_route = require('../routes/recinto-route');
 const partido_route = require('../routes/partido-route');
+const acta_route = require('../routes/acta-route');
 const user_route = require('../routes/user-route');
 const auth_route = require('../routes/auth-route');
 
@@ -23,6 +24,6 @@ module.exports = function(app){
     app.use('/api/localidades',localidad_route);
     app.use('/api/recintos',recinto_route);
     app.use('/api/partidos',partido_route);
-
+    app.use('/api/actas',acta_route);
     app.use(error);
 }
