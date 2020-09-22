@@ -4,7 +4,19 @@ const express = require('express');
 const cors = require('cors');
 const app = express();
 
+
+const bodyParser = require('body-parser');
+const methodOverride = require('method-override');
+
+app.use(bodyParser.json());
+app.use(methodOverride('_method'));
+
+app.set('view engine', 'ejs');
+
 app.use(cors());
+app.get('/',(req,res)=>{    
+    res.render('index');    
+})
 
 //require('./startup/logging');
 require('./startup/validation');

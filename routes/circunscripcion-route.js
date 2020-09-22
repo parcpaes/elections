@@ -68,7 +68,7 @@ router.put('/:id', async (req, res) => {
 
     if (!circunscripcion) return res.status(404).send('The circunscripcion with the given ID was not found.');
     
-    const result  = await Provincia.updateMany({ $and:[{_id: {$in: req.body.provincias}}, {circunscripcions:{$nin:req.body.id}}]},{
+    const result  = await Provincia.updateMany({ $and:[{_id: {$in: req.body.provincias}}, {circunscripcions:{$nin:req.params.id}}]},{
          $push:{circunscripcions:[req.params.id]}
     });
    res.send(circunscripcion);

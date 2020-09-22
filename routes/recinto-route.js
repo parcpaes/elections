@@ -20,8 +20,25 @@ router.get('/:id', async (req, res) => {
 
 router.post('/', async (req, res) => {
   
-    const { error } = validate(req.body); 
-    if (error) return res.status(400).send(error.details[0].message);  
+  const { error } = validate(req.body); 
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const municipio = await Municipio.findOne({_id: req.body.municipioId});
+  if(!municipio) return res.status(400).send('Municipio was not found');
+
+  const localidad = await Localidad.findOne({_id: req.body.localidadId});
+  if(!localidad) return res.status(400).send('Localidad was not found');
+
+  console.log(req.body);
+  const recinto = new Recinto({    
+    institucion: req.body.institucion,  
+    tipo: req.body.tipo,
+    numeroMesas:req.body.numeroMesas,
+    municipio:  municipio,
+    localidad: localidad
+  });
+  
+  await recinto.save();
 
     const isRecinto = await Recinto.findOne({name: req.body.institucion});
     if(isRecinto) return res.status(400).send('Recinto already register');
