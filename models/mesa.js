@@ -9,14 +9,7 @@ const mesaSchema = new mongoose.Schema({
         unique:true,
         min:1,
         max:1024
-    },
-    codMesa:{
-        type:Number,
-        //required:true,
-        unique:true,
-        min:1,
-        max:65536
-    },
+    },    
     cantidad:{
         type:Number,
         required:true,
@@ -33,8 +26,7 @@ const Mesa = mongoose.model('Mesa',mesaSchema);
 
 function validateMesa(mesa) {
     const schema = Joi.object({
-      name: Joi.number().min(1).max(500).required(), 
-      codMesa: Joi.number().min(1).max(65536).required(), 
+      name: Joi.number().min(1).max(500).required(),       
       cantidad: Joi.number().min(1).max(1024).required() 
     });
 
@@ -43,4 +35,4 @@ function validateMesa(mesa) {
 
   module.exports.Mesa = Mesa;
   exports.validate = validateMesa;
-  module.exports.departamentoSchema = departamentoSchema;
+  module.exports.mesaSchema = mesaSchema;

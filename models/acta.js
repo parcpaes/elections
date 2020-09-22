@@ -1,19 +1,22 @@
 const mongoose = require('mongoose');
-const {mesaSchema} = require('./mesa');
+const Joi = require('joi');
 // estado: [anulada:'true', cerrada[repeticion de nueva eleccion]]
 //fecha de 1 noviembre
 const actaSchema = new mongoose.Schema({
     horaApertura:{
         type:Date,
-        required:true        
+        required:true   
     },
     horaCierre:{
         type:Date,
         required:true
     },
     codMesa:{
-        type:mesaSchema,
-        //required:true,        
+        type:String,
+        required:true,
+        unique:true,
+        minlength:4,
+        maxlength:250,
     },    
     empadronados:{
         type:Number,
@@ -24,20 +27,25 @@ const actaSchema = new mongoose.Schema({
     estado:{
         type:String,
         enum:['anulada','cerrada']
-    }
+    },
+    filename:{
+        type:String,
+        required:true,
+    }    
 });
 
 const Acta = mongoose.model('Acta',actaSchema);
 
-function validateActa(mesa) {
+function validateActa(acta) {
     const schema = Joi.object({
       horaApertura: Joi.date().required(), 
       horaCierre: Joi.date().required(),
-      codMesa: Joi.number().min(1).max(1024).required(),
-      empadronados:Joi.number().min(1).max(1024).required()
+      codMesa: Joi.string().min(4).max(250).required(),
+      empadronados:Joi.number().min(1).max(1024).required(), 
+      filename: Joi.string()
     });
 
-    return schema.validate(mesa);
+    return schema.validate(acta);
   }
 
   module.exports.Acta = Acta;
