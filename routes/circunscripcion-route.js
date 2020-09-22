@@ -45,7 +45,8 @@ router.post('/', async (req, res) => {
   res.send(circunscripcion);
 });
 
-router.put('/:id', async (req, res) => {    
+router.put('/:id', async (req, res) => {  
+    
     const { error } = validate(req.body); 
 
     const departamento = await Departamento.findById(req.body.departamentoId);
@@ -70,9 +71,8 @@ router.put('/:id', async (req, res) => {
     const result  = await Provincia.updateMany({ $and:[{_id: {$in: req.body.provincias}}, {circunscripcions:{$nin:req.body.id}}]},{
          $push:{circunscripcions:[req.params.id]}
     });
-    
-    //console.log(result); 
    res.send(circunscripcion);
+
 });
 
 

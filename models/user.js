@@ -2,7 +2,7 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const { boolean } = require('joi');
+const bcrypt = require('bcrypt');
 
 const roles = ['Admin','Operador','Control','Reportes'];
 const userSchema = new mongoose.Schema({
@@ -42,6 +42,12 @@ const userSchema = new mongoose.Schema({
         type: Boolean,
         required:true
     }
+});
+
+userSchema.pre('save',async function(next){
+    const salt = await bcrypt.getSalt();
+    this.password = await bcrypt.hash(this.password,salt);
+    next();
 });
 
 userSchema.methods.generateAuthToken = function(){

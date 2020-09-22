@@ -28,14 +28,11 @@ router.post('/', async (req, res)=>{
 
     if(user) return res.status(400).send('User already register');
     
-    user = new User(_.pick(req.body,['name','fullName','telefono','password','rol','state']));
-    
-    const salt = await bcrypt.genSalt(10);
-    user.password = await bcrypt.hash(user.password,salt);
-    
+    user = new User(_.pick(req.body,['name','fullName','telefono','password','rol','state']));    
     await user.save();
+    
     const token = user.generateAuthToken();
-    res.header('x-auth-token',token).send(_.pick(user,['_id','name']));
+    //res.header('x-auth-token',token).send(_.pick(user,['_id','name']));
 });
  
 router.put('/:id', async (req, res)=>{
