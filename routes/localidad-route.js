@@ -44,7 +44,7 @@ router.put('/:id', async (req, res) => {
 });
 
 router.delete('/:id', async (req, res) => {
-    const Localidad = await Localidad.findByIdAndRemove(req.params.id);  
+    const localidad = await Localidad.findByIdAndRemove(req.params.id);  
     if (!localidad) return res.status(404).send('The Localidad with the given ID was not found.');    
 
     res.send(localidad);
