@@ -73,7 +73,7 @@ router.put('/:id', async (req, res) => {
   res.send(recinto); 
 });
 
-router.delete('/:id', [auth,admin],async (req, res) => {
+router.delete('/:id',async (req, res) => {
     const recinto = await Recinto.findByIdAndRemove(req.params.id);  
     if (!recinto) return res.status(404).send('The recinto with the given ID was not found.');    
 
