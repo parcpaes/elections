@@ -36,14 +36,7 @@ router.post('/', async (req, res)=>{
  
 router.put('/:id', async (req, res)=>{
     const { error } = validate(req.body); 
-    if (error) return res.status(400).send(error.details[0].message);
-
-    
-    let user = await User.findOne({$or:[
-        {name: req.body.name},
-        {telefono: req.body.telefono}]});
-        
-    if(user) return res.status(400).send('User already register');
+    if (error) return res.status(400).send(error.details[0].message);    
 
     user = await User.findByIdAndUpdate(req.params.id,{
       name:req.body.name,
