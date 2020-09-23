@@ -39,10 +39,7 @@ router.post('/', async (req, res) => {
   });
   
   await recinto.save();
-
-    const isRecinto = await Recinto.findOne({name: req.body.institucion});
-    if(isRecinto) return res.status(400).send('Recinto already register');
-
+  
     const municipio = await Municipio.findOne({_id: req.body.municipioId});
     if(!municipio) return res.status(400).send('Municipio was not found');
 
