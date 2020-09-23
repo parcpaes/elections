@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 //const winston = require('winston');
-const mongoURL = 'mongodb://localhost/election';
+const mongoURL = 'mongodb://localhost/elections';
 
 module.exports = function conectionDB(){    
     mongoose.connect(mongoURL,
