@@ -6,10 +6,10 @@ const app = express();
 
 
 const bodyParser = require('body-parser');
-const methodOverride = require('method-override');
+//const methodOverride = require('method-override');
 
 app.use(bodyParser.json());
-app.use(methodOverride('_method'));
+//app.use(methodOverride('_method'));
 
 app.set('view engine', 'ejs');
 

@@ -2,9 +2,10 @@ const jwt = require('jsonwebtoken');
 const config = require('config');
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const { boolean } = require('joi');
+const bcrypt = require('bcrypt');
 
 const roles = ['Admin','Operador','Control','Reportes'];
+
 const userSchema = new mongoose.Schema({
     name:{
         type: String,
@@ -44,8 +45,31 @@ const userSchema = new mongoose.Schema({
     }
 });
 
+userSchema.pre('save',async function(next){    
+    const salt = await bcrypt.getSalt();
+    this.password = await bcrypt.hash(this.password,salt);
+    next();
+});
+
+userSchema.pre('findOneAndUpdate',async function(next){    
+    const salt = await bcrypt.getSalt();
+    this.password = await bcrypt.hash(this.password,salt);
+    this.findOneAndUpdate(this._id,{
+        password
+    });
+    next();
+})
+
 userSchema.methods.generateAuthToken = function(){
     return jwt.sign({_id: this._id, rol: this.rol },config.get('jwtPrivateKey'));
+}
+
+userSchema.statics.login = async function(name,password){
+    const user = await this.findOne({name});
+    if(!user) return null;
+    const auth = await bcrypt.compare(password,user.password);
+    if(auth) return user;
+    return null;
 }
 
 const User = mongoose.model('User',userSchema);

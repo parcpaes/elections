@@ -19,28 +19,33 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', async (req, res) => {
-  
-  const { error } = validate(req.body); 
-  if (error) return res.status(400).send(error.details[0].message);
 
-  const municipio = await Municipio.findOne({_id: req.body.municipioId});
-  if(!municipio) return res.status(400).send('Municipio was not found');
+    const { error } = validate(req.body); 
+    if (error) return res.status(400).send(error.details[0].message);
+    console.log(req.body);
 
-  const localidad = await Localidad.findOne({_id: req.body.localidadId});
-  if(!localidad) return res.status(400).send('Localidad was not found');
+    const municipio = await Municipio.findOne({_id: req.body.municipioId});
+    if(!municipio) return res.status(400).send('Municipio was not found');
 
-  console.log(req.body);
-  const recinto = new Recinto({    
-    institucion: req.body.institucion,  
-    tipo: req.body.tipo,
-    numeroMesas:req.body.numeroMesas,
-    municipio:  municipio,
-    localidad: localidad
-  });
-  
-  await recinto.save();
+    const localidad = await Localidad.findOne({_id: req.body.localidadId});
+    if(!localidad) return res.status(400).send('Localidad was not found');
 
-  res.send(recinto);
+    try{
+      const recinto = new Recinto({
+        institucion: req.body.institucion,  
+        tipo: req.body.tipo,
+        numeroMesas:req.body.numeroMesas,
+        municipio:  municipio,
+        localidad: localidad,
+        localizacion: req.body.localizacion
+      });
+      
+      await recinto.save();
+    
+      res.send(recinto);
+    }catch(error){
+      res.send(error.message);
+    }
 });
 
 router.put('/:id', async (req, res) => {
@@ -59,7 +64,8 @@ router.put('/:id', async (req, res) => {
       tipo: req.body.tipo,
       numeroMesas:req.body.numeroMesas,
       municipio:  municipio,
-      localidad: localidad
+      localidad: localidad,
+      localizacion: req.body.localizacion
     },{new:true});
 
   if (!recinto) return res.status(404).send('The recinto with the given ID was not found.');
@@ -67,7 +73,7 @@ router.put('/:id', async (req, res) => {
   res.send(recinto); 
 });
 
-router.delete('/:id', [auth,admin],async (req, res) => {
+router.delete('/:id',async (req, res) => {
     const recinto = await Recinto.findByIdAndRemove(req.params.id);  
     if (!recinto) return res.status(404).send('The recinto with the given ID was not found.');    
 
