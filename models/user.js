@@ -65,7 +65,7 @@ userSchema.methods.generateAuthToken = function () {
     { _id: this._id, rol: this.rol },
     config.get('jwtPrivateKey'),
     {
-      expiresIn: 5 * 60,
+      expiresIn: '6h',
     }
   );
 };

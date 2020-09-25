@@ -12,15 +12,15 @@ const bodyParser = require('body-parser');
 app.use(bodyParser.json());
 // app.use(methodOverride('_method'));
 
-app.use(cookieParser());
-app.set('view engine', 'ejs');
+// app.set('view engine', 'ejs');
 app.use(cors());
+app.use(cookieParser());
 
 // require('./startup/logging');
+require('./startup/config-jwt')();
 require('./startup/validation');
 require('./startup/routes')(app);
 require('./startup/db')();
-require('./startup/config-jwt')();
 
 app.use(express.static(path.join(__dirname, '/dist/electionweb')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname)));

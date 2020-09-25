@@ -1,5 +1,6 @@
 const { Acta, validate } = require('../models/acta');
 const express = require('express');
+// eslint-disable-next-line new-cap
 const router = express.Router();
 const mongoose = require('mongoose');
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
@@ -9,7 +10,7 @@ const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
 
 const mongoDb = mongoose.connection;
 let gridfsbucket;
-console.log(mongoDb.eventNames());
+// console.log(mongoDb.eventNames());
 mongoDb.once('open', function () {
   gridfsbucket = new mongoose.mongo.GridFSBucket(mongoDb.db);
 });
@@ -59,7 +60,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
 });
 
 router.put('/:id', uploadFile.single('file'), async (req, res) => {
-  console.log('update');
+  // console.log('update');
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -101,6 +102,7 @@ router.delete('/:id', async (req, res) => {
   res.send(acta);
 });
 
+// eslint-disable-next-line require-jsdoc
 function validateImage(fileData) {
   const schema = Joi.object({
     //  _id:Joi.string(),
