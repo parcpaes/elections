@@ -3,6 +3,7 @@
 
 const express = require('express');
 const cors = require('cors');
+const cookieParser = require('cookie-parser');
 
 const app = express();
 const path = require('path');
@@ -10,6 +11,8 @@ const bodyParser = require('body-parser');
 // const methodOverride = require('method-override');
 app.use(bodyParser.json());
 // app.use(methodOverride('_method'));
+
+app.use(cookieParser());
 app.set('view engine', 'ejs');
 app.use(cors());
 

@@ -63,7 +63,10 @@ userSchema.pre('findOneAndUpdate', async function (next) {
 userSchema.methods.generateAuthToken = function () {
   return jwt.sign(
     { _id: this._id, rol: this.rol },
-    config.get('jwtPrivateKey')
+    config.get('jwtPrivateKey'),
+    {
+      expiresIn: 5 * 60,
+    }
   );
 };
 
@@ -77,6 +80,7 @@ userSchema.statics.login = async function (name, password) {
 
 const User = mongoose.model('User', userSchema);
 
+// eslint-disable-next-line require-jsdoc
 function validateUser(user) {
   const schema = Joi.object({
     name: Joi.string().min(4).max(255).required(),

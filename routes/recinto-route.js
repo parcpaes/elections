@@ -1,12 +1,13 @@
-//const admin = require('../middleware/admin-middleware');
-//const auth = require('../middleware/auth-middleware');
+//  const admin = require('../middleware/admin-middleware');
+const auth = require('../middleware/auth-middleware');
 const { Recinto, validate } = require('../models/recinto');
 const { Municipio } = require('../models/municipio');
 const { Localidad } = require('../models/localidad');
 const express = require('express');
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', auth, async (req, res) => {
   const recinto = await Recinto.find().sort('name');
   res.send(recinto);
 });

@@ -1,31 +1,38 @@
 const bcrypt = require('bcrypt');
-const {User} = require('../models/user');
+const { User } = require('../models/user');
 const express = require('express');
 const Joi = require('joi');
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
-//const roles = ['Admin','Operador','Jefe-Recinto'];
+// const roles = ['Admin','Operador','Jefe-Recinto'];
 
-router.post('/', async (req, res)=>{
-	//console.log(req.body);
-	const { error } = validate(req.body); 
-	if (error) return res.status(400).send(error.details[0].message);
+router.post('/', async (req, res) => {
+  // console.log(req.body);
+  const { error } = validate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
 
-	let user = await User.findOne({name: req.body.name});
-	if(!user) return res.status(400).send('Invalid email or password');
-	const validPassword = await bcrypt.compare(req.body.password, user.password);
-	if(!validPassword) return res.status(400).send('Invalid email or password');
-    
-	const token = user.generateAuthToken();
-	res.send(token);
+  const user = await User.findOne({ name: req.body.name });
+  if (!user) return res.status(400).send('Invalid email or password');
+  const validPassword = await bcrypt.compare(
+    req.body.username,
+    req.body.password
+  );
+
+  if (!validPassword) return res.status(400).send('Invalid email or password');
+
+  const token = user.generateAuthToken();
+  res.cookie('authjwt', token, { httpOnly: true, maxAge: 5 * 60 * 60 * 1000 });
+  res.status(200).json({ token });
 });
 
-function validate(req){    
-	const schema = Joi.object({
-		name: Joi.string().min(3).max(255).required(),
-		password: Joi.string().min(5).max(255).required()        
-	});
-	return schema.validate(req);
+// eslint-disable-next-line require-jsdoc
+function validate(req) {
+  const schema = Joi.object({
+    name: Joi.string().min(3).max(255).required(),
+    password: Joi.string().min(5).max(255).required(),
+  });
+  return schema.validate(req);
 }
 
 module.exports = router;
