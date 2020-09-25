@@ -19,8 +19,8 @@ require('./startup/routes')(app);
 require('./startup/db')();
 require('./startup/config-jwt')();
 
-app.use(express.static(__dirname.join('/dist/electionweb')));
+app.use(express.static(path.join(__dirname, '/dist/electionweb')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname)));
 
-const port = process.env.PORT || 3000;
+const port = process.env.PORT || 3300;
 app.listen(port, () => console.log(`Listening on port ${port}...`));
