@@ -12,12 +12,10 @@ router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const user = await User.findOne({ name: req.body.name });
+  console.log(req.body);
+  const user = await User.findOne({ name: req.body.usuario });
   if (!user) return res.status(400).send('Invalid email or password');
-  const validPassword = await bcrypt.compare(
-    req.body.username,
-    req.body.password
-  );
+  const validPassword = User.login(req.body.usuario, req.body.password);
 
   if (!validPassword) return res.status(400).send('Invalid email or password');
 
@@ -29,7 +27,7 @@ router.post('/', async (req, res) => {
 // eslint-disable-next-line require-jsdoc
 function validate(req) {
   const schema = Joi.object({
-    name: Joi.string().min(3).max(255).required(),
+    usuario: Joi.string().min(3).max(255).required(),
     password: Joi.string().min(5).max(255).required(),
   });
   return schema.validate(req);

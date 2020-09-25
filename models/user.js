@@ -46,13 +46,13 @@ const userSchema = new mongoose.Schema({
 });
 
 userSchema.pre('save', async function (next) {
-  const salt = await bcrypt.getSalt();
+  const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   next();
 });
 
 userSchema.pre('findOneAndUpdate', async function (next) {
-  const salt = await bcrypt.getSalt();
+  const salt = await bcrypt.genSalt();
   this.password = await bcrypt.hash(this.password, salt);
   this.findOneAndUpdate(this._id, {
     password,
