@@ -1,29 +1,29 @@
 const express = require('express');
 
-const departamento_route = require('../routes/departamento-route');
-const circunscripcion_route = require('../routes/circunscripcion-route');
-const provincia_route = require('../routes/provincia-route');
-const municipio_route = require('../routes/municipio-route');
-const localidad_route = require('../routes/localidad-route');
-const recinto_route = require('../routes/recinto-route');
-const partido_route = require('../routes/partido-route');
-const acta_route = require('../routes/acta-route');
-const user_route = require('../routes/user-route');
-const auth_route = require('../routes/auth-route');
+const departamentoRoute = require('../routes/departamento-route');
+const circunscripcionRoute = require('../routes/circunscripcion-route');
+const provinciaRoute = require('../routes/provincia-route');
+const municipioRoute = require('../routes/municipio-route');
+const localidadRoute = require('../routes/localidad-route');
+const recintoRoute = require('../routes/recinto-route');
+const partidoRoute = require('../routes/partido-route');
+const actaRoute = require('../routes/acta-route');
+const userRoute = require('../routes/user-route');
+const authRoute = require('../routes/auth-route');
 
 const error = require('../middleware/error-middleware');
 
-module.exports = function(app){    
-    app.use(express.json());
-    app.use('/api/auth',auth_route);
-    app.use('/api/users',user_route);
-    app.use('/api/departamentos', departamento_route);     
-    app.use('/api/circunscripcions', circunscripcion_route);
-    app.use('/api/provincias', provincia_route);
-    app.use('/api/municipios',municipio_route);
-    app.use('/api/localidades',localidad_route);
-    app.use('/api/recintos',recinto_route);
-    app.use('/api/partidos',partido_route);
-    app.use('/api/actas',acta_route);
-    app.use(error);
-}
+module.exports = function (app) {
+  app.use(express.json());
+  app.use('/api/auth', authRoute);
+  app.use('/api/users', userRoute);
+  app.use('/api/departamentos', departamentoRoute);
+  app.use('/api/circunscripcions', circunscripcionRoute);
+  app.use('/api/provincias', provinciaRoute);
+  app.use('/api/municipios', municipioRoute);
+  app.use('/api/localidades', localidadRoute);
+  app.use('/api/recintos', recintoRoute);
+  app.use('/api/partidos', partidoRoute);
+  app.use('/api/actas', actaRoute);
+  app.use(error);
+};

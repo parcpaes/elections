@@ -1,12 +1,10 @@
-const winston = require('winston');
-
-module.exports = function(err,req, res, next){
-    console.log(err.message, err);
-    res.status(500).send('Something failed.');
-    next();
-    //error
-    //warn
-    //info
-    //verbose
-    //silly
-}
+module.exports = function handleErrors(err, req, res, next) {
+  console.log(err.message, err);
+  res.status(500).send('Something failed.');
+  return next();
+  // error
+  // warn
+  // info
+  // verbose
+  // silly
+};
