@@ -37,14 +37,16 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', uploadFile.single('file'), async (req, res) => {
-  const arrayVotacion = req.body;
+  console.log(req.file);
+  console.log(req.body.arrayVotacion);
+  const arrayVotacion = req.body.arrayVotacion;
 
   // if (!req.file) return res.status(400).send('Imagen is null');
   // const imagerror = validateImage({ contentType: req.file.contentType });
   // if (imagerror.error)
   //   return res.status(400).send(imagerror.error.details[0].message);
-  if (arrayVotacion.length < 2)
-    return res.status(400).send('La longitud de datos no es correcta ');
+  if (arrayVotacion.length < 3)
+    return res.status(400).send('La longitud de datos no es correcta');
 
   const { errorActa } = validateActa(arrayVotacion[0]);
   if (errorActa) return res.status(400).send(errorActa.details[0].message);
@@ -75,42 +77,44 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
       }
       // { session }
     );
-
-    const { errorParitdo } = validatePartido(arrayVotacion[1]);
+    const votaciones = arrayVotacion[1];
+    const { errorParitdo } = validatePartido(arrayVotacion[2]);
     if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
 
-    if (!arrayVotacion[1].length)
-      return res.status(400).send('Los votos estan vacios');
-
-    const listVotos = arrayVotacion[1][0];
-
-    const isRecinto = await Recinto.findById(listVotos.recinto);
+    const isRecinto = await Recinto.findById(votaciones.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
 
     const isCircunscription = await Circunscripcion.findById(
-      listVotos.circunscripcion
+      votaciones.circunscripcion
     );
     if (!isCircunscription) throw Error('Circunscripcion is not found');
 
-    const votos = arrayVotacion[1].map((voto, index) => {
-      voto.circunscripcion = isCircunscription;
-      voto.recinto = isRecinto;
-      voto.acta = _.pick(acta, [
-        '_id',
-        'codMesa',
-        'horaApertura',
-        'horaCierre',
-        'empadronados',
-        'estado',
-      ]);
-      return voto;
-    });
+    const paritosVotos = arrayVotacion[2];
+    if (!paritosVotos.length) throw Error('Los votos estan vacios');
 
     await acta.save();
-    const votacion = await Votacion.insertMany(votos, {
-      ordered: false,
-      // session,
-    });
+    const votacion = await Votacion.insertMany(
+      [
+        {
+          numeroMesa: votaciones.numeroMesa,
+          circunscripcion: isCircunscription,
+          recinto: isRecinto,
+          acta: _.pick(acta, [
+            '_id',
+            'codMesa',
+            'horaApertura',
+            'horaCierre',
+            'empadronados',
+            'estado',
+          ]),
+          estado: votaciones.estado,
+          candidatura: paritosVotos,
+        },
+      ],
+      {
+        // session,
+      }
+    );
 
     // await session.commitTransaction();
     // session.endSession();
@@ -119,7 +123,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
     // await session.abortTransaction();
     // session.endSession();
     console.log(error);
-    res.status(400).send('error de datos');
+    res.status(400).send(error.message);
   }
 });
 

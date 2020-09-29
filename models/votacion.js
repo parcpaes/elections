@@ -23,7 +23,8 @@ const votacionSchema = new mongoose.Schema({
   //   max: 1024,
   // },
   candidatura: {
-    type: [partidoSchema]
+    type: [partidoSchema],
+    // required: true,
   },
   numeroMesa: {
     type: String,
@@ -79,7 +80,7 @@ const Votacion = mongoose.model('Votacion', votacionSchema);
 // eslint-disable-next-line require-jsdoc
 function validateVocacion(partido) {
   const schema = Joi.object({
-    // votos: Joi.number().min(0).max(1024).required,    
+    // votos: Joi.number().min(0).max(1024).required,
     numeroMesa: Joi.string().min(4).max(250).required(),
     circunscripcion: Joi.objectId().required(),
     recinto: Joi.objectId().required(),
