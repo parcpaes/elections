@@ -38,7 +38,9 @@ router.post('/', async (req, res) => {
     ])
   );
   await user.save();
-
+  res
+    .status(200)
+    .json(_.pick(user, ['_id', 'name', 'fullname', 'rol', 'state']));
   // const token = user.generateAuthToken();
   // res.header('x-auth-token',token).send(_.pick(user,['_id','name']));
 });
@@ -62,7 +64,9 @@ router.put('/:id', async (req, res) => {
   if (!user)
     return res.status(404).send('The User with the given ID was not found.');
 
-  res.send(user);
+  res
+    .status(200)
+    .json(_.pick(user, ['_id', 'name', 'fullname', 'rol', 'state']));
 });
 
 module.exports = router;
