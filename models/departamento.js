@@ -5,7 +5,6 @@ const departamentoSchema = new mongoose.Schema({
   name: {
     type: String,
     required: true,
-    unique: true,
     minlength: 4,
     maxlength: 100,
   },

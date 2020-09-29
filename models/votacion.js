@@ -1,27 +1,31 @@
 const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
-const { departamentoSchema } = require('./departamento');
+const { actaSchema } = require('./acta');
 const { circunscripcionSchema } = require('./circunscripcion');
-const { provinciaSchema } = require('./provincia');
-const { municipioSchema } = require('./municipio');
-const { localidadSchema } = require('./localidad');
 const { recintoSchema } = require('./recinto');
-const { partidoSchema } = require('./partido');
+
+const { Circunscripcion } = require('../models/circunscripcion');
+const { Recinto } = require('../models/recinto');
+
+const votationEstado = ['Enviado', 'Verificado', 'Anulado'];
+const listTypeElection = [
+  'Presidente y Vicepresidente',
+  'Diputados Uninominales',
+  'Diputados Especiales',
+];
 
 const votacionSchema = new mongoose.Schema({
-  votos: {
-    type: Number,
-    required: true,
-    unique: true,
-    min: 0,
-    max: 1024,
-  },
+  // votos: {
+  //   type: Number,
+  //   required: true,
+  //   min: 1,
+  //   max: 1024,
+  // },
   candidatura: {
     type: String,
-    // required:true,
-    unique: true,
-    minlength: 5,
-    maxlength: 255,
+    required: true,
+    enum: listTypeElection,
   },
   numeroMesa: {
     type: String,
@@ -29,56 +33,139 @@ const votacionSchema = new mongoose.Schema({
     minlength: 4,
     maxlength: 255,
   },
-  departamento: {
-    type: departamentoSchema,
-    // required:true
+  votosBlancos: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 255,
+  },
+  votosNullos: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 255,
   },
   circunscripcion: {
     type: circunscripcionSchema,
-    // required:true
-  },
-  provincia: {
-    type: provinciaSchema,
-    // required:true
-  },
-  municipio: {
-    type: municipioSchema,
-    // required:true
-  },
-  localidad: {
-    type: localidadSchema,
-    // required:true
+    // required: true,
   },
   recinto: {
     type: recintoSchema,
-    // required:true
+    // required: true,
   },
-  partido: {
-    type: partidoSchema,
-    // required:true
+  acta: {
+    type: actaSchema,
+    required: true,
+  },
+  estado: {
+    type: String,
+    enum: votationEstado,
+  },
+  CREEMOS: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  ADN: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  MASIPSP: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  FPV: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  PANBOL: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  LIBRE21: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  CC: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 1024,
+  },
+  JUNTOS: {
+    type: Number,
+    required: true,
+    min: 0,
+    max: 255,
+    default: 0,
   },
 });
 
-const Vocacion = mongoose.model('Vocacion', votacionSchema);
+// votacionSchema.pre('insertMany', async (error, votos) => {
+//   // const acta = { _id: votos.id, codMesa: votos.codMesa };
+//   return await votos.map(async (voto) => {
+//     try {
+//       // const isCircunscription = await Circunscripcion.findById(
+//       //   voto.circunscripcion
+//       // );
+//       // if (!isCircunscription) throw Error('Circunscripcion is not found');
+//       // console.log(isCircunscription);
+//       // voto.circunscripcion = isCircunscription;
+
+//       const isRecinto = await Recinto.findOne({ _id: voto.recinto });
+//       if (!isRecinto) throw Error('Recinto is not found');
+
+//       voto.recinto = isRecinto;
+//       // voto.acta = acta;
+//       console.log(voto);
+
+//       return voto;
+//     } catch (error) {
+//       throw Error('Error on Circunscipcion and Recinto');
+//     }
+//   });
+// });
+
+const Votacion = mongoose.model('Votacion', votacionSchema);
 
 // eslint-disable-next-line require-jsdoc
 function validateVocacion(partido) {
   const schema = Joi.object({
-    sigla: Joi.string().min(0).max(1024).required(),
-    name: Joi.number().min(5).max(255).required(),
-    departamentoId: Joi.objectId().required(),
-    circunscripcionId: Joi.objectId().required(),
-    provinciaId: Joi.objectId().required(),
-    municipioId: Joi.objectId().required(),
-    localidadId: Joi.objectId().required(),
-    recintoId: Joi.objectId().required(),
-    partidoId: Joi.objectId().required(),
+    // votos: Joi.number().min(0).max(1024).required,
+    candidatura: Joi.string.valid(...listTypeElection).required(),
     numeroMesa: Joi.string().min(4).max(250).required(),
+    votosBlancos: Joi.number().min(0).max(255).required(),
+    votosNullos: Joi.number().min(0).max(255).required(),
+    circunscripcion: Joi.objectId().required(),
+    recinto: Joi.objectId().required(),
+    acta: Joi.objectId().required(),
+    estado: Joi.string()
+      .valid(...taskNames)
+      .required(),
+    CREEMOS: Joi.number().min(0).max(1024).required(),
+    ADN: Joi.number().min(0).max(1024).required(),
+    MASIPSP: Joi.number().min(0).max(1024).required(),
+    FPV: Joi.number().min(0).max(1024).required(),
+    PANBOL: Joi.number().min(0).max(1024).required(),
+    LIBRE21: Joi.number().min(0).max(1024).required(),
+    CC: Joi.number().min(0).max(1024).required(),
+    JUNTOS: Joi.number().min(0).max(255),
   });
 
   return schema.validate(partido);
 }
 
-module.exports.Vocacion = Vocacion;
+module.exports.Votacion = Votacion;
 exports.validate = validateVocacion;
 module.exports.votacionSchema = votacionSchema;
