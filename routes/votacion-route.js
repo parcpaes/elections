@@ -6,10 +6,15 @@ const { Recinto } = require('../models/recinto');
 const mongoose = require('mongoose');
 const _ = require('lodash');
 
+const uploadFile = require('../middleware/gridfilesStorage-middleware');
+
 const router = express.Router();
 
+const Joi = require('joi');
+const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
+
 const mongoDb = mongoose.connection;
-let session;
+let gridfsbucket;
 // console.log(mongoDb.eventNames());
 mongoDb.once('open', function () {
   gridfsbucket = new mongoose.mongo.GridFSBucket(mongoDb.db);
@@ -30,9 +35,14 @@ router.get('/:id', async (req, res) => {
   res.send(votacion);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', uploadFile.single('file'), async (req, res) => {
   const arrayVotacion = req.body;
-  if (arrayVotacion.length)
+
+  // if (!req.file) return res.status(400).send('Imagen is null');
+  // const imagerror = validateImage({ contentType: req.file.contentType });
+  // if (imagerror.error)
+  //   return res.status(400).send(imagerror.error.details[0].message);
+  if (arrayVotacion.length < 2)
     return res.status(400).send('La longitud de datos no es correcta ');
 
   const { errorActa } = validateActa(arrayVotacion[0]);
@@ -43,7 +53,9 @@ router.post('/', async (req, res) => {
     { runValidators: true }
   );
 
-  if (isActa) return res.status(400).send('Acta is already registered');
+  // const isImage = await Acta.findOne({ filename: req.file.filename });
+  // if (!isImage) return res.status(400).send('Imagen exist');
+  // if (isActa) return res.status(400).send('Acta is already registered');
   // const session = await mongoose.startSession();
 
   try {
@@ -57,11 +69,13 @@ router.post('/', async (req, res) => {
         empadronados: actaData.empadronados,
         estado: actaData.estado,
         observaciones: actaData.observaciones,
-        // filename:actaData.filename,
+        // filename: req.file.filename,
       }
       // { session }
     );
-    await acta.save();
+
+    if (!arrayVotacion[1].length)
+      return res.status(400).send('Los votos estan vacios');
 
     const listVotos = arrayVotacion[1][0];
 
@@ -86,6 +100,8 @@ router.post('/', async (req, res) => {
       ]);
       return voto;
     });
+
+    await acta.save();
     const votacion = await Votacion.insertMany(votos, {
       ordered: false,
       // session,
@@ -103,7 +119,7 @@ router.post('/', async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  //const { error } = validate(req.body);
+  // const { error } = validate(req.body);
   const arrayVotacion = req.body;
   if (arrayVotacion.length)
     return res.status(400).send('La longitud de datos no es correcta ');
@@ -125,5 +141,13 @@ router.put('/:id', async (req, res) => {
 
   //   res.send(departamento);
 });
+
+// eslint-disable-next-line require-jsdoc
+function validateImage(fileData) {
+  const schema = Joi.object({
+    contentType: Joi.string().valid(...images),
+  });
+  return schema.validate(fileData);
+}
 
 module.exports = router;
