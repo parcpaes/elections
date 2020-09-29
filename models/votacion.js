@@ -8,7 +8,7 @@ const { recintoSchema } = require('./recinto');
 const { Circunscripcion } = require('../models/circunscripcion');
 const { Recinto } = require('../models/recinto');
 
-const votationEstado = ['Enviado', 'Verificado', 'Anulado'];
+const votationEstado = ['Enviado', 'Verificado', 'Anulada'];
 const listTypeElection = [
   'Presidente y Vicepresidente',
   'Diputados Uninominales',
@@ -66,42 +66,49 @@ const votacionSchema = new mongoose.Schema({
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   ADN: {
     type: Number,
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   MASIPSP: {
     type: Number,
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   FPV: {
     type: Number,
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   PANBOL: {
     type: Number,
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   LIBRE21: {
     type: Number,
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   CC: {
     type: Number,
     required: true,
     min: 0,
     max: 1024,
+    default: 0,
   },
   JUNTOS: {
     type: Number,

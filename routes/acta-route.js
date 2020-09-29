@@ -1,4 +1,4 @@
-const { Acta, validate } = require('../models/acta');
+const { Acta, validateActa } = require('../models/acta');
 const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
@@ -40,7 +40,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
   if (imagerror.error)
     return res.status(400).send(imagerror.error.details[0].message);
 
-  const { error } = validate(req.body);
+  const { error } = validateActa(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
@@ -61,7 +61,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
 
 router.put('/:id', uploadFile.single('file'), async (req, res) => {
   // console.log('update');
-  const { error } = validate(req.body);
+  const { error } = validateActa(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   if (!req.file) return res.status(400).send('Imagen is null');

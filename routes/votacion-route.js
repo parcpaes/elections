@@ -114,7 +114,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
     // await session.abortTransaction();
     // session.endSession();
     console.log(error);
-    res.send('error de datos');
+    res.status(400).send('error de datos');
   }
 });
 
