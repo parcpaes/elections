@@ -4,7 +4,7 @@ const mongoose = require('mongoose');
 const { actaSchema } = require('./acta');
 const { circunscripcionSchema } = require('./circunscripcion');
 const { recintoSchema } = require('./recinto');
-
+const { partidoSchema } = require('./partido');
 const { Circunscripcion } = require('../models/circunscripcion');
 const { Recinto } = require('../models/recinto');
 
@@ -23,27 +23,13 @@ const votacionSchema = new mongoose.Schema({
   //   max: 1024,
   // },
   candidatura: {
-    type: String,
-    required: true,
-    enum: listTypeElection,
+    type: [partidoSchema]
   },
   numeroMesa: {
     type: String,
     required: true,
     minlength: 4,
     maxlength: 255,
-  },
-  votosBlancos: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 255,
-  },
-  votosNullos: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 255,
   },
   circunscripcion: {
     type: circunscripcionSchema,
@@ -60,62 +46,6 @@ const votacionSchema = new mongoose.Schema({
   estado: {
     type: String,
     enum: votationEstado,
-  },
-  CREEMOS: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  ADN: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  MASIPSP: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  FPV: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  PANBOL: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  LIBRE21: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  CC: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 1024,
-    default: 0,
-  },
-  JUNTOS: {
-    type: Number,
-    required: true,
-    min: 0,
-    max: 255,
-    default: 0,
   },
 });
 
@@ -149,27 +79,15 @@ const Votacion = mongoose.model('Votacion', votacionSchema);
 // eslint-disable-next-line require-jsdoc
 function validateVocacion(partido) {
   const schema = Joi.object({
-    // votos: Joi.number().min(0).max(1024).required,
-    candidatura: Joi.string.valid(...listTypeElection).required(),
+    // votos: Joi.number().min(0).max(1024).required,    
     numeroMesa: Joi.string().min(4).max(250).required(),
-    votosBlancos: Joi.number().min(0).max(255).required(),
-    votosNullos: Joi.number().min(0).max(255).required(),
     circunscripcion: Joi.objectId().required(),
     recinto: Joi.objectId().required(),
     acta: Joi.objectId().required(),
     estado: Joi.string()
       .valid(...taskNames)
       .required(),
-    CREEMOS: Joi.number().min(0).max(1024).required(),
-    ADN: Joi.number().min(0).max(1024).required(),
-    MASIPSP: Joi.number().min(0).max(1024).required(),
-    FPV: Joi.number().min(0).max(1024).required(),
-    PANBOL: Joi.number().min(0).max(1024).required(),
-    LIBRE21: Joi.number().min(0).max(1024).required(),
-    CC: Joi.number().min(0).max(1024).required(),
-    JUNTOS: Joi.number().min(0).max(255),
   });
-
   return schema.validate(partido);
 }
 

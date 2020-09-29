@@ -73,7 +73,7 @@ router.put('/:id', uploadFile.single('file'), async (req, res) => {
   if (!isActa) return res.status(400).send('Acta is not found');
 
   const isImage = await Acta.findOne({ filename: req.file.filename });
-  if (!isImage) return res.status(400).send('Imagen exist');
+  // if (!isImage) return res.status(400).send('Imagen exist');
 
   const acta = await Acta.findByIdAndUpdate(
     req.params.id,

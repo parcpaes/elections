@@ -24,7 +24,7 @@ module.exports = function (app) {
   app.use('/api/municipios', municipioRoute);
   app.use('/api/localidades', localidadRoute);
   app.use('/api/recintos', recintoRoute);
-  app.use('/api/partidos', partidoRoute);
+  // app.use('/api/partidos', partidoRoute);
   app.use('/api/actas', actaRoute);
   app.use('/api/votacion', voteRoure);
   app.use(error);

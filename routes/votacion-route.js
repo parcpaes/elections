@@ -2,6 +2,7 @@ const { Votacion, validate } = require('../models/votacion');
 const express = require('express');
 const { Acta, validateActa } = require('../models/acta');
 const { Circunscripcion } = require('../models/circunscripcion');
+const { validatePartido } = require('../models/partido');
 const { Recinto } = require('../models/recinto');
 const mongoose = require('mongoose');
 const _ = require('lodash');
@@ -55,8 +56,9 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
 
   // const isImage = await Acta.findOne({ filename: req.file.filename });
   // if (!isImage) return res.status(400).send('Imagen exist');
-  // if (isActa) return res.status(400).send('Acta is already registered');
-  // const session = await mongoose.startSession();
+
+  if (isActa) return res.status(400).send('Acta is already registered');
+  const session = await mongoose.startSession();
 
   try {
     const actaData = arrayVotacion[0];
@@ -69,10 +71,13 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
         empadronados: actaData.empadronados,
         estado: actaData.estado,
         observaciones: actaData.observaciones,
-        // filename: req.file.filename,
+        filename: req.file.filename,
       }
       // { session }
     );
+
+    const { errorParitdo } = validatePartido(arrayVotacion[1]);
+    if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
 
     if (!arrayVotacion[1].length)
       return res.status(400).send('Los votos estan vacios');
