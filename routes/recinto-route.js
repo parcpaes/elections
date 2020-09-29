@@ -7,7 +7,7 @@ const express = require('express');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
-router.get('/', auth, async (req, res) => {
+router.get('/', async (req, res) => {
   const recinto = await Recinto.find().sort('name');
   res.send(recinto);
 });
