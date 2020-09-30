@@ -91,7 +91,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
 
   try {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
-    if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
+    if (errorParitdo) return res.status(400).send(errorParitdo.details[0].message);
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
@@ -138,7 +138,7 @@ router.put('/:id', async (req, res) => {
 
   try {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
-    if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
+    if (errorParitdo) return res.status(400).send(errorParitdo.details[0].message);
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
@@ -151,16 +151,18 @@ router.put('/:id', async (req, res) => {
 
     const votacion = await Votacion.findOneAndUpdate({ _id: req.params.id },
       {
-        numeroMesa: dataVote.numeroMesa,
-        circunscripcion: isCircunscription,
-        recinto: isRecinto,
-        acta: _.pick(isActa, [
-          'codMesa',
-          'empadronados',
-          'estado',
-        ]),
-        estado: votaciones.estado,
-        candidatura: dataVote.candidatura
+        $set: {
+          numeroMesa: dataVote.numeroMesa,
+          circunscripcion: isCircunscription,
+          recinto: isRecinto,
+          acta: _.pick(isActa, [
+            'codMesa',
+            'empadronados',
+            'estado',
+          ]),
+          estado: votaciones.estado,
+          candidatura: dataVote.candidatura
+        }
       },
     );
     res.send(votacion);
