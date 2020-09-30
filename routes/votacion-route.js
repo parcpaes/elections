@@ -9,6 +9,7 @@ const _ = require('lodash');
 
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
 
+// eslint-disable-next-line new-cap
 const router = express.Router();
 
 const Joi = require('joi');
@@ -22,6 +23,7 @@ mongoDb.once('open', function () {
 });
 
 const idType = (id) => {
+  // eslint-disable-next-line new-cap
   return mongoose.Types.ObjectId(id);
 };
 
@@ -53,16 +55,16 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/test/:id', async (req, res) => {
-  // const { circunscripcionId, municipioId, provinciaId } = req.body;
+  const { circunscripcionId, municipioId, provinciaId } = req.body;
   console.log('test1 ..');
   const votacion = await Votacion.aggregate([
     {
       $match: {
-        'circunscripcion._id': req.params.id,
+        'circunscripcion._id': idType(circunscripcionId),
         'circunscripcion.provincias': {
-          $in: [ObjectId('5f5ac09ffa74ada37adf107a')],
+          $in: [idType(provinciaId)],
         },
-        'recinto.municipio._id': ObjectId('5f5ac0e1f770bc79cb72c0b7'),
+        'recinto.municipio._id': idType(municipioId),
       },
     },
   ]);
@@ -81,17 +83,18 @@ router.get('/:id', async (req, res) => {
   res.send(votacion);
 });
 
-router.post('/', uploadFile.single('file'), async (req, res) => {
+router.post('/', async (req, res) => {
   const dataVote = req.body;
   const isActa = await Acta.findOne(
-    { codMesa: dataVote.codMesa },
+    { codMesa: dataVote.codMesa }
     // { runValidators: true }
   );
-  if (!isActa) return res.status(400).send("Acta is not found");
+  if (!isActa) return res.status(400).send('Acta is not found');
 
   try {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
-    if (errorParitdo) return res.status(400).send(errorParitdo.details[0].message);
+    if (errorParitdo)
+      return res.status(400).send(errorParitdo.details[0].message);
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
@@ -102,9 +105,56 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
 
     if (!isCircunscription) throw Error('Circunscripcion is not found');
 
-    const votacion = await Votacion.insertMany(
-      [
-        {
+    const votacion = await Votacion.insertMany([
+      {
+        numeroMesa: dataVote.numeroMesa,
+        circunscripcion: isCircunscription,
+        recinto: isRecinto,
+        acta: _.pick(isActa, [
+          '_id',
+          'codMesa',
+          'horaApertura',
+          'horaCierre',
+          'empadronados',
+          'estado',
+        ]),
+        estado: dataVote.estado,
+        candidatura: dataVote.candidatura,
+      },
+    ]);
+    res.send(votacion);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error.message);
+  }
+});
+
+router.put('/:id', async (req, res) => {
+  const dataVote = req.body;
+  const isActa = await Acta.findOne(
+    { codMesa: dataVote.codMesa }
+    // { runValidators: true }
+  );
+  if (!isActa) return res.status(400).send('Acta is not found');
+
+  try {
+    const { errorParitdo } = validatePartido(dataVote.candidatura);
+    if (errorParitdo)
+      return res.status(400).send(errorParitdo.details[0].message);
+
+    const isRecinto = await Recinto.findById(dataVote.recinto);
+    if (!isRecinto) throw Error('Recinto is not found');
+
+    const isCircunscription = await Circunscripcion.findById(
+      dataVote.circunscripcion
+    );
+
+    if (!isCircunscription) throw Error('Circunscripcion is not found');
+
+    const votacion = await Votacion.findOneAndUpdate(
+      { _id: req.params.id },
+      {
+        $set: {
           numeroMesa: dataVote.numeroMesa,
           circunscripcion: isCircunscription,
           recinto: isRecinto,
@@ -119,51 +169,8 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
           estado: dataVote.estado,
           candidatura: dataVote.candidatura,
         },
-      ]
-    );
-    res.send(votacion);
-  } catch (error) {
-    console.log(error);
-    res.status(400).send(error.message);
-  }
-});
-
-router.put('/:id', async (req, res) => {
-  const dataVote = req.body;
-  const isActa = await Acta.findOne(
-    { codMesa: dataVote.codMesa },
-    // { runValidators: true }
-  );
-  if (!isActa) return res.status(400).send("Acta is not found");
-
-  try {
-    const { errorParitdo } = validatePartido(dataVote.candidatura);
-    if (errorParitdo) return res.status(400).send(errorParitdo.details[0].message);
-
-    const isRecinto = await Recinto.findById(dataVote.recinto);
-    if (!isRecinto) throw Error('Recinto is not found');
-
-    const isCircunscription = await Circunscripcion.findById(
-      dataVote.circunscripcion
-    );
-
-    if (!isCircunscription) throw Error('Circunscripcion is not found');
-
-    const votacion = await Votacion.findOneAndUpdate({ _id: req.params.id },
-      {
-        $set: {
-          numeroMesa: dataVote.numeroMesa,
-          circunscripcion: isCircunscription,
-          recinto: isRecinto,
-          acta: _.pick(isActa, [
-            'codMesa',
-            'empadronados',
-            'estado',
-          ]),
-          estado: dataVote.estado,
-          candidatura: dataVote.candidatura
-        }
       },
+      { new: true }
     );
     res.send(votacion);
   } catch (error) {
