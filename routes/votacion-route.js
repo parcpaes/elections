@@ -96,6 +96,9 @@ router.post('/', async (req, res) => {
     if (errorParitdo)
       return res.status(400).send(errorParitdo.details[0].message);
 
+    if (!dataVote.candidatura.length)
+      return res.status(400).send('[candidatura] is empty');
+
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
 
@@ -141,6 +144,9 @@ router.put('/:id', async (req, res) => {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
     if (errorParitdo)
       return res.status(400).send(errorParitdo.details[0].message);
+
+    if (!dataVote.candidatura.length)
+      return res.status(400).send('[candidatura] is empty');
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
