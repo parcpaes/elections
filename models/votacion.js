@@ -50,31 +50,6 @@ const votacionSchema = new mongoose.Schema({
   },
 });
 
-// votacionSchema.pre('insertMany', async (error, votos) => {
-//   // const acta = { _id: votos.id, codMesa: votos.codMesa };
-//   return await votos.map(async (voto) => {
-//     try {
-//       // const isCircunscription = await Circunscripcion.findById(
-//       //   voto.circunscripcion
-//       // );
-//       // if (!isCircunscription) throw Error('Circunscripcion is not found');
-//       // console.log(isCircunscription);
-//       // voto.circunscripcion = isCircunscription;
-
-//       const isRecinto = await Recinto.findOne({ _id: voto.recinto });
-//       if (!isRecinto) throw Error('Recinto is not found');
-
-//       voto.recinto = isRecinto;
-//       // voto.acta = acta;
-//       console.log(voto);
-
-//       return voto;
-//     } catch (error) {
-//       throw Error('Error on Circunscipcion and Recinto');
-//     }
-//   });
-// });
-
 const Votacion = mongoose.model('Votacion', votacionSchema);
 
 // eslint-disable-next-line require-jsdoc

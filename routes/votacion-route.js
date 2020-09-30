@@ -87,7 +87,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
     { codMesa: dataVote.codMesa },
     // { runValidators: true }
   );
-  if (isActa) return res.status(400).send("Acta is not found");
+  if (!isActa) return res.status(400).send("Acta is not found");
 
   try {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
