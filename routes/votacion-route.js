@@ -21,23 +21,26 @@ mongoDb.once('open', function () {
   gridfsbucket = new mongoose.mongo.GridFSBucket(mongoDb.db);
 });
 
+const idType = (id) => {
+  return mongoose.Types.ObjectId(id);
+};
+
 router.get('/recinto/:id', async (req, res) => {
-  if (req.params.id) return res.status(400).send('id null');
+  if (!req.params.id) return res.status(400).send('id null');
   try {
     const votacion = await Votacion.aggregate([
       {
-        $match: { "recinto._id": req.params.id }
+        $match: { 'recinto._id': idType(req.params.id) },
       },
       {
         $project: {
           _id: 0,
           numeroMesa: 1,
-          institucion: "$recinto.institucion",
-          estado: 1
-        }
-      }
+          institucion: '$recinto.institucion',
+          estado: 1,
+        },
+      },
     ]);
-    console.log(votacion);
     res.send(votacion);
   } catch (error) {
     return res.status(400).send(error.message);
@@ -50,22 +53,23 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/test/:id', async (req, res) => {
-  // const { circunscripcionId, municipioId, provinciaId } = req.body;  
+  // const { circunscripcionId, municipioId, provinciaId } = req.body;
   console.log('test1 ..');
   const votacion = await Votacion.aggregate([
     {
-      $match:
-      {
-        "circunscripcion._id": req.params.id,
-        "circunscripcion.provincias": { $in: [ObjectId("5f5ac09ffa74ada37adf107a")] },
-        "recinto.municipio._id": ObjectId("5f5ac0e1f770bc79cb72c0b7")
-      }
-    }
+      $match: {
+        'circunscripcion._id': req.params.id,
+        'circunscripcion.provincias': {
+          $in: [ObjectId('5f5ac09ffa74ada37adf107a')],
+        },
+        'recinto.municipio._id': ObjectId('5f5ac0e1f770bc79cb72c0b7'),
+      },
+    },
   ]);
   // "circunscripcion.provincias": { $in: [ObjectId("5f5ac09ffa74ada37adf107a")]}
   console.log(votacion);
-  res.send("votacion");
-})
+  res.send('votacion');
+});
 
 router.get('/:id', async (req, res) => {
   const votacion = await Votacion.findById(req.params.id);
