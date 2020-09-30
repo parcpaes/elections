@@ -129,27 +129,45 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
 });
 
 router.put('/:id', async (req, res) => {
-  // const { error } = validate(req.body);
-  const arrayVotacion = req.body;
-  if (arrayVotacion.length)
-    return res.status(400).send('La longitud de datos no es correcta ');
+  const dataVote = req.body;
+  const isActa = await Acta.findOne(
+    { codMesa: dataVote.codMesa },
+    // { runValidators: true }
+  );
+  if (!isActa) return res.status(400).send("Acta is not found");
 
-  const { errorActa } = validateActa(arrayVotacion[0]);
-  if (errorActa) return res.status(400).send(errorActa.details[0].message);
-  //   const departamento = await Departamento.findByIdAndUpdate(
-  //     req.params.id,
-  //     {
-  //       name: req.body.name,
-  //     },
-  //     { new: true }
-  //   );
+  try {
+    const { errorParitdo } = validatePartido(dataVote.candidatura);
+    if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
 
-  //   if (!departamento)
-  //     return res
-  //       .status(404)
-  //       .send('The departamento with the given ID was not found.');
+    const isRecinto = await Recinto.findById(dataVote.recinto);
+    if (!isRecinto) throw Error('Recinto is not found');
 
-  //   res.send(departamento);
+    const isCircunscription = await Circunscripcion.findById(
+      dataVote.circunscripcion
+    );
+
+    if (!isCircunscription) throw Error('Circunscripcion is not found');
+
+    const votacion = await Votacion.findOneAndUpdate({ _id: req.params.id },
+      {
+        numeroMesa: dataVote.numeroMesa,
+        circunscripcion: isCircunscription,
+        recinto: isRecinto,
+        acta: _.pick(isActa, [
+          'codMesa',
+          'empadronados',
+          'estado',
+        ]),
+        estado: votaciones.estado,
+        candidatura: dataVote.candidatura
+      },
+    );
+    res.send(votacion);
+  } catch (error) {
+    console.log(error);
+    res.status(400).send(error.message);
+  }
 });
 
 // eslint-disable-next-line require-jsdoc
