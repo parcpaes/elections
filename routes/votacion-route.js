@@ -21,10 +21,45 @@ mongoDb.once('open', function () {
   gridfsbucket = new mongoose.mongo.GridFSBucket(mongoDb.db);
 });
 
+router.get('/recinto/:id', async (req, res) => {
+  const votacion = await Votacion.aggregate([
+    {
+      $match: { "recinto._id": req.params.id }
+    },
+    {
+      $project: {
+        _id: 0,
+        numeroMesa: 1,
+        institucion: "$recinto.institucion",
+        estado: 1
+      }
+    }
+  ]);
+  res.send(votacion);
+});
+
 router.get('/', async (req, res) => {
   const votacion = await Votacion.find();
   res.send(votacion);
 });
+
+router.get('/test/:id', async (req, res) => {
+  // const { circunscripcionId, municipioId, provinciaId } = req.body;  
+  console.log('test1 ..');
+  const votacion = await Votacion.aggregate([
+    {
+      $match:
+      {
+        "circunscripcion._id": req.params.id,
+        "circunscripcion.provincias": { $in: [ObjectId("5f5ac09ffa74ada37adf107a")] },
+        "recinto.municipio._id": ObjectId("5f5ac0e1f770bc79cb72c0b7")
+      }
+    }
+  ]);
+  // "circunscripcion.provincias": { $in: [ObjectId("5f5ac09ffa74ada37adf107a")]}
+  console.log(votacion);
+  res.send("votacion");
+})
 
 router.get('/:id', async (req, res) => {
   const votacion = await Votacion.findById(req.params.id);
@@ -37,10 +72,9 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', uploadFile.single('file'), async (req, res) => {
-  console.log(req.file);
-  console.log(req.body.arrayVotacion);
-  const arrayVotacion = req.body.arrayVotacion;
-
+  //console.log(req.file);
+  // console.log(req.body);
+  const arrayVotacion = JSON.parse(req.body.arrayVotacion);
   // if (!req.file) return res.status(400).send('Imagen is null');
   // const imagerror = validateImage({ contentType: req.file.contentType });
   // if (imagerror.error)
@@ -60,7 +94,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
   // if (!isImage) return res.status(400).send('Imagen exist');
 
   if (isActa) return res.status(400).send('Acta is already registered');
-  const session = await mongoose.startSession();
+  // const session = await mongoose.startSession();
 
   try {
     const actaData = arrayVotacion[0];
@@ -77,11 +111,14 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
       }
       // { session }
     );
-    const votaciones = arrayVotacion[1];
+
     const { errorParitdo } = validatePartido(arrayVotacion[2]);
     if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
-
+    console.log(arrayVotacion[1]);
+    const votaciones = arrayVotacion[1];
+    console.log(votaciones);
     const isRecinto = await Recinto.findById(votaciones.recinto);
+
     if (!isRecinto) throw Error('Recinto is not found');
 
     const isCircunscription = await Circunscripcion.findById(
