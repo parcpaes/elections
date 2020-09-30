@@ -116,7 +116,7 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
             'empadronados',
             'estado',
           ]),
-          estado: votaciones.estado,
+          estado: dataVote.estado,
           candidatura: dataVote.candidatura,
         },
       ]
@@ -160,7 +160,7 @@ router.put('/:id', async (req, res) => {
             'empadronados',
             'estado',
           ]),
-          estado: votaciones.estado,
+          estado: dataVote.estado,
           candidatura: dataVote.candidatura
         }
       },
