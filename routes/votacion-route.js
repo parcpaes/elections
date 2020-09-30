@@ -23,20 +23,25 @@ mongoDb.once('open', function () {
 
 router.get('/recinto/:id', async (req, res) => {
   if (req.params.id) return res.status(400).send('id null');
-  const votacion = await Votacion.aggregate([
-    {
-      $match: { "recinto._id": req.params.id }
-    },
-    {
-      $project: {
-        _id: 0,
-        numeroMesa: 1,
-        institucion: "$recinto.institucion",
-        estado: 1
+  try {
+    const votacion = await Votacion.aggregate([
+      {
+        $match: { "recinto._id": req.params.id }
+      },
+      {
+        $project: {
+          _id: 0,
+          numeroMesa: 1,
+          institucion: "$recinto.institucion",
+          estado: 1
+        }
       }
-    }
-  ]);
-  res.send(votacion);
+    ]);
+    console.log(votacion);
+    res.send(votacion);
+  } catch (error) {
+    return res.status(400).send(error.message);
+  }
 });
 
 router.get('/', async (req, res) => {
