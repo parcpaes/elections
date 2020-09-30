@@ -22,6 +22,7 @@ mongoDb.once('open', function () {
 });
 
 router.get('/recinto/:id', async (req, res) => {
+  if (req.params.id) return res.status(400).send('id null');
   const votacion = await Votacion.aggregate([
     {
       $match: { "recinto._id": req.params.id }
