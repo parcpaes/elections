@@ -82,71 +82,33 @@ router.get('/:id', async (req, res) => {
 });
 
 router.post('/', uploadFile.single('file'), async (req, res) => {
-  //console.log(req.file);
-  // console.log(req.body);
-  const arrayVotacion = JSON.parse(req.body.arrayVotacion);
-  // if (!req.file) return res.status(400).send('Imagen is null');
-  // const imagerror = validateImage({ contentType: req.file.contentType });
-  // if (imagerror.error)
-  //   return res.status(400).send(imagerror.error.details[0].message);
-  if (arrayVotacion.length < 3)
-    return res.status(400).send('La longitud de datos no es correcta');
-
-  const { errorActa } = validateActa(arrayVotacion[0]);
-  if (errorActa) return res.status(400).send(errorActa.details[0].message);
-
+  const dataVote = req.body;
   const isActa = await Acta.findOne(
-    { codMesa: arrayVotacion[0].codMesa },
-    { runValidators: true }
+    { codMesa: dataVote.codMesa },
+    // { runValidators: true }
   );
-
-  // const isImage = await Acta.findOne({ filename: req.file.filename });
-  // if (!isImage) return res.status(400).send('Imagen exist');
-
-  if (isActa) return res.status(400).send('Acta is already registered');
-  // const session = await mongoose.startSession();
+  if (isActa) return res.status(400).send("Acta is not found");
 
   try {
-    const actaData = arrayVotacion[0];
-    // session.startTransaction();
-    const acta = new Acta(
-      {
-        horaApertura: actaData.horaApertura,
-        horaCierre: actaData.horaCierre,
-        codMesa: actaData.codMesa,
-        empadronados: actaData.empadronados,
-        estado: actaData.estado,
-        observaciones: actaData.observaciones,
-        filename: req.file.filename,
-      }
-      // { session }
-    );
-
-    const { errorParitdo } = validatePartido(arrayVotacion[2]);
+    const { errorParitdo } = validatePartido(dataVote.candidatura);
     if (errorActa) return res.status(400).send(errorParitdo.details[0].message);
-    console.log(arrayVotacion[1]);
-    const votaciones = arrayVotacion[1];
-    console.log(votaciones);
-    const isRecinto = await Recinto.findById(votaciones.recinto);
 
+    const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
 
     const isCircunscription = await Circunscripcion.findById(
-      votaciones.circunscripcion
+      dataVote.circunscripcion
     );
+
     if (!isCircunscription) throw Error('Circunscripcion is not found');
 
-    const paritosVotos = arrayVotacion[2];
-    if (!paritosVotos.length) throw Error('Los votos estan vacios');
-
-    await acta.save();
     const votacion = await Votacion.insertMany(
       [
         {
-          numeroMesa: votaciones.numeroMesa,
+          numeroMesa: dataVote.numeroMesa,
           circunscripcion: isCircunscription,
           recinto: isRecinto,
-          acta: _.pick(acta, [
+          acta: _.pick(isActa, [
             '_id',
             'codMesa',
             'horaApertura',
@@ -155,20 +117,12 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
             'estado',
           ]),
           estado: votaciones.estado,
-          candidatura: paritosVotos,
+          candidatura: dataVote.candidatura,
         },
-      ],
-      {
-        // session,
-      }
+      ]
     );
-
-    // await session.commitTransaction();
-    // session.endSession();
     res.send(votacion);
   } catch (error) {
-    // await session.abortTransaction();
-    // session.endSession();
     console.log(error);
     res.status(400).send(error.message);
   }
