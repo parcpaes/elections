@@ -34,7 +34,7 @@ router.get('/image/:id', async (req, res) => {
   gridfsbucket.openDownloadStreamByName(acta.filename).pipe(res);
 });
 
-router.post('/image/:id', uploadFile.single('file'), async (req, res) => {
+router.put('/image/:id', uploadFile.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).send('Imagen is null');
     const imagerror = validateImage({ contentType: req.file.contentType });
@@ -43,15 +43,17 @@ router.post('/image/:id', uploadFile.single('file'), async (req, res) => {
 
     const acta = await Acta.findByIdAndUpdate(req.params.id, {
       filename: req.file.filename,
-    }, { new: true });
+    },
+      { new: true });
     await acta.save();
+
     res.status(200).json(_.pick(acta, ['_id', 'codMesa']));
   } catch (error) {
     res.status(400).send('Error uploading  imagen acta');
   }
 })
 
-router.post('/', uploadFile.single('file'), async (req, res) => {
+router.post('/', async (req, res) => {
   const { error } = validateActa(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -69,21 +71,13 @@ router.post('/', uploadFile.single('file'), async (req, res) => {
   res.send(acta);
 });
 
-router.put('/:id', uploadFile.single('file'), async (req, res) => {
+router.put('/:id', async (req, res) => {
   // console.log('update');
   const { error } = validateActa(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  if (!req.file) return res.status(400).send('Imagen is null');
-  const imagerror = validateImage({ contentType: req.file.contentType });
-  if (imagerror.error)
-    return res.status(400).send(imagerror.error.details[0].message);
-
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
   if (!isActa) return res.status(400).send('Acta is not found');
-
-  const isImage = await Acta.findOne({ filename: req.file.filename });
-  // if (!isImage) return res.status(400).send('Imagen exist');
 
   const acta = await Acta.findByIdAndUpdate(
     req.params.id,
@@ -92,8 +86,7 @@ router.put('/:id', uploadFile.single('file'), async (req, res) => {
       horaApertura: req.body.horaApertura,
       horaCierre: req.body.horaCierre,
       empadronados: req.body.empadronados,
-      estado: req.body.estado,
-      filename: req.file.filename,
+      estado: req.body.estado
     },
     { new: true }
   );
