@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
-
+const _ = require('lodash');
 const Joi = require('joi');
 const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
 
