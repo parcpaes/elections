@@ -41,17 +41,20 @@ router.put('/image/:id', uploadFile.single('file'), async (req, res) => {
     if (imagerror.error)
       return res.status(400).send(imagerror.error.details[0].message);
 
-    const acta = await Acta.findByIdAndUpdate(req.params.id, {
-      filename: req.file.filename,
-    },
-      { new: true });
+    const acta = await Acta.findByIdAndUpdate(
+      req.params.id,
+      {
+        filename: req.file.filename,
+      },
+      { new: true }
+    );
     await acta.save();
 
     res.status(200).json(_.pick(acta, ['_id', 'codMesa']));
   } catch (error) {
     res.status(400).send('Error uploading  imagen acta');
   }
-})
+});
 
 router.post('/', async (req, res) => {
   const { error } = validateActa(req.body);
@@ -65,7 +68,7 @@ router.post('/', async (req, res) => {
     horaApertura: req.body.horaApertura,
     horaCierre: req.body.horaCierre,
     empadronados: req.body.empadronados,
-    estado: req.body.estado
+    estado: req.body.estado,
   });
   await acta.save();
   res.send(acta);
@@ -86,7 +89,7 @@ router.put('/:id', async (req, res) => {
       horaApertura: req.body.horaApertura,
       horaCierre: req.body.horaCierre,
       empadronados: req.body.empadronados,
-      estado: req.body.estado
+      estado: req.body.estado,
     },
     { new: true }
   );

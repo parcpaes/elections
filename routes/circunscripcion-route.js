@@ -31,6 +31,12 @@ router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
+  const circunscripcionName = await Circunscripcion.findOne({
+    name: req.body.name,
+  });
+  if (circunscripcionName)
+    return res.status(400).send('Circunscripcion is already registered');
+
   const departamento = await Departamento.findById(req.body.departamentoId);
   if (!departamento) return res.status(400).send('Invalid Departamento');
 

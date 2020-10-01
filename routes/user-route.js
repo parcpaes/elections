@@ -20,27 +20,23 @@ router.get('/me', auth, async (req, res) => {
 router.post('/', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
-
+  const { name, fullName, telefono, password, rol, state } = req.body;
   let user = await User.findOne({
-    $or: [{ name: req.body.name }, { telefono: req.body.telefono }],
+    $or: [{ name }, { telefono }],
   });
 
   if (user) return res.status(400).send('User already register');
-
-  user = new User(
-    _.pick(req.body, [
-      'name',
-      'fullName',
-      'telefono',
-      'password',
-      'rol',
-      'state',
-    ])
-  );
+  const passwordGen = await User.encryptPwd(password);
+  user = new User({
+    name,
+    fullName,
+    telefono,
+    password: passwordGen,
+    rol,
+    state,
+  });
   await user.save();
-  res
-    .status(200)
-    .json(_.pick(user, ['_id', 'name', 'fullname', 'rol', 'state']));
+  res.status(200).json({ name, fullName, telefono, rol, state });
   // const token = user.generateAuthToken();
   // res.header('x-auth-token',token).send(_.pick(user,['_id','name']));
 });
@@ -49,24 +45,27 @@ router.put('/:id', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const user = await User.findByIdAndUpdate(
-    req.params.id,
-    {
-      name: req.body.name,
-      fullName: req.body.fullName,
-      telefono: req.body.telefono,
-      password: req.body.password,
-      state: req.body.state,
-    },
-    { new: true }
-  );
-
-  if (!user)
-    return res.status(404).send('The User with the given ID was not found.');
-
-  res
-    .status(200)
-    .json(_.pick(user, ['_id', 'name', 'fullname', 'rol', 'state']));
+  const { name, fullName, telefono, password, rol, state } = req.body;
+  const passwordGen = await User.encryptPwd(password);
+  try {
+    const user = await User.findByIdAndUpdate(
+      req.params.id,
+      {
+        name,
+        fullName,
+        telefono,
+        password: passwordGen,
+        rol,
+        state,
+      },
+      { new: true }
+    );
+    if (!user)
+      return res.status(404).send('The User with the given ID was not found.');
+    res.status(200).json({ name, fullName, telefono, rol, state });
+  } catch (error) {
+    console.log(error.message);
+  }
 });
 
 module.exports = router;

@@ -1,3 +1,4 @@
+/* eslint-disable require-jsdoc */
 const jwt = require('jsonwebtoken');
 const config = require('config');
 const Joi = require('joi');
@@ -22,7 +23,7 @@ const userSchema = new mongoose.Schema({
     unique: true,
   },
   telefono: {
-    type: Number,
+    type: String,
     required: true,
     unique: true,
     minlength: 5,
@@ -45,37 +46,35 @@ const userSchema = new mongoose.Schema({
   },
 });
 
-userSchema.pre('save', async function (next) {
-  const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-  next();
-});
+function generatePassword() {
+  return ((Math.PI * 7) / 2) * 100;
+}
 
-userSchema.pre('findOneAndUpdate', async function (next) {
+userSchema.statics.encryptPwd = async function (password = generatePassword()) {
   const salt = await bcrypt.genSalt();
-  this.password = await bcrypt.hash(this.password, salt);
-  this.findOneAndUpdate(this._id, {
-    password,
-  });
-  next();
-});
+  return await bcrypt.hash(password, salt);
+};
 
 userSchema.methods.generateAuthToken = function () {
   return jwt.sign(
     { _id: this._id, rol: this.rol },
     config.get('jwtPrivateKey'),
     {
-      expiresIn: '6h',
+      expiresIn: '3h',
     }
   );
 };
 
 userSchema.statics.login = async function (name, password) {
-  const user = await this.findOne({ name });
-  if (!user) return null;
-  const auth = await bcrypt.compare(password, user.password);
-  if (auth) return user;
-  return null;
+  try {
+    const user = await this.findOne({ name: name });
+    if (!user) return null;
+    const auth = await bcrypt.compare(password, user.password);
+    if (auth) return user;
+    return null;
+  } catch (error) {
+    console.log(errro.message);
+  }
 };
 
 const User = mongoose.model('User', userSchema);
