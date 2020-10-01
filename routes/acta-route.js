@@ -4,7 +4,7 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
-
+const _ = require('lodash');
 const Joi = require('joi');
 const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
 
@@ -34,24 +34,24 @@ router.get('/image/:id', async (req, res) => {
   gridfsbucket.openDownloadStreamByName(acta.filename).pipe(res);
 });
 
-router.put('/image/:id', uploadFile.single('file'), async (req, res) => {
+router.put('/image/:codMesa', uploadFile.single('file'), async (req, res) => {
   try {
     if (!req.file) return res.status(400).send('Imagen is null');
     const imagerror = validateImage({ contentType: req.file.contentType });
     if (imagerror.error)
       return res.status(400).send(imagerror.error.details[0].message);
 
-    const acta = await Acta.findByIdAndUpdate(
-      req.params.id,
+    const acta = await Acta.findOneAndUpdate(
+      { codMesa: req.params.codMesa },
       {
         filename: req.file.filename,
       },
       { new: true }
     );
-    await acta.save();
 
     res.status(200).json(_.pick(acta, ['_id', 'codMesa']));
   } catch (error) {
+    console.log(error);
     res.status(400).send('Error uploading  imagen acta');
   }
 });
