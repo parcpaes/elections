@@ -1,9 +1,10 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
+const { circunscripcionSchema } = require('./circunscripcion');
+const { provinciaSchema } = require('./provincia');
 const { municipioSchema } = require('./municipio');
 const { localidadSchema } = require('./localidad');
-const { indexOf } = require('lodash');
 const typeElection = ['Uninominal', 'Especial'];
 
 const recintoSchema = new mongoose.Schema({
@@ -23,6 +24,14 @@ const recintoSchema = new mongoose.Schema({
     required: true,
     min: 1,
     max: 1024,
+  },
+  circunscripcion: {
+    type: circunscripcionSchema,
+    required: true,
+  },
+  provincia: {
+    type: provinciaSchema,
+    required: true,
   },
   municipio: {
     type: municipioSchema,
@@ -59,7 +68,9 @@ function validateRecinto(recinto) {
       .items(Joi.string().valid(...typeElection))
       .min(1)
       .required(),
-    numeroMesas: Joi.number().min(1).max(1024).required(),
+    numeroMesas: Joi.number().min(1).max(800).required(),
+    circunscripcionId: Joi.objectId().required(),
+    provinciaId: Joi.objectId().required(),
     municipioId: Joi.objectId().required(),
     localidadId: Joi.objectId().required(),
     localizacion: Joi.array().items(Joi.number()),

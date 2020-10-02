@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const circunscripcionSchema = require('./circunscripcion');
+const { circunscripcionSchema } = require('./circunscripcion');
 
 const provinciaSchema = new mongoose.Schema({
   name: {
@@ -10,19 +10,19 @@ const provinciaSchema = new mongoose.Schema({
     maxlength: 100,
     // unique:true
   },
-  circunscripcions: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Circunscripcion',
-    },
-  ],
+  circunscripciones: {
+    type: [circunscripcionSchema],
+    require: true,
+  },
 });
 
 const Provincia = mongoose.model('Provincia', provinciaSchema);
 
+// eslint-disable-next-line require-jsdoc
 function validateProvincia(provincia) {
   const schema = Joi.object({
     name: Joi.string().min(4).max(100).required(),
+    circunscripciones: Joi.array().min(1).required(),
   });
   return schema.validate(provincia);
 }

@@ -60,8 +60,7 @@ router.put('/:id', async (req, res) => {
       },
       { new: true }
     );
-    if (!user)
-      return res.status(404).send('The User with the given ID was not found.');
+    if (!user) return res.status(404).send('The User with the given ID was not found.');
     res.status(200).json({ name, fullName, telefono, rol, state });
   } catch (error) {
     console.log(error.message);

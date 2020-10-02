@@ -6,18 +6,13 @@ const express = require('express');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const provincia = await Provincia.find()
-    .sort('name')
-    .populate('circunscripcions', '_id name');
+  const provincia = await Provincia.find();
   res.send(provincia);
 });
 
 router.get('/:id', async (req, res) => {
   const provincia = await Provincia.findById(req.params.id);
-  if (!provincia)
-    return res
-      .status(404)
-      .send('The provincia with the given ID was not found.');
+  if (!provincia) return res.status(404).send('The provincia with the given ID was not found.');
   res.send(provincia);
 });
 
@@ -30,8 +25,8 @@ router.post('/', async (req, res) => {
 
   const provincia = new Provincia({
     name: req.body.name,
+    circunscripciones: req.body.circunscripciones,
   });
-
   await provincia.save();
 
   res.send(provincia);
@@ -44,25 +39,21 @@ router.put('/:id', async (req, res) => {
   const provincia = await Provincia.findByIdAndUpdate(
     req.params.id,
     {
-      name: req.body.name,
+      $set: {
+        name: req.body.name,
+        circunscripciones: req.body.circunscripciones,
+      },
     },
     { new: true }
   );
 
-  if (!provincia)
-    return res
-      .status(404)
-      .send('The provincia with the given ID was not found.');
-
+  if (!provincia) return res.status(404).send('The provincia with the given ID was not found.');
   res.send(provincia);
 });
 
 router.delete('/:id', async (req, res) => {
   const provincia = await Provincia.findByIdAndRemove(req.params.id);
-  if (!provincia)
-    return res
-      .status(404)
-      .send('The provincia with the given ID was not found.');
+  if (!provincia) return res.status(404).send('The provincia with the given ID was not found.');
 
   res.send(provincia);
 });

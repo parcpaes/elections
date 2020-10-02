@@ -75,10 +75,7 @@ router.get('/test/:id', async (req, res) => {
 
 router.get('/:id', async (req, res) => {
   const votacion = await Votacion.findById(req.params.id);
-  if (!votacion)
-    return res
-      .status(404)
-      .send('The votacion with the given ID was not found.');
+  if (!votacion) return res.status(404).send('The votacion with the given ID was not found.');
 
   res.send(votacion);
 });
@@ -93,18 +90,14 @@ router.post('/', async (req, res) => {
 
   try {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
-    if (errorParitdo)
-      return res.status(400).send(errorParitdo.details[0].message);
+    if (errorParitdo) return res.status(400).send(errorParitdo.details[0].message);
 
-    if (!dataVote.candidatura.length)
-      return res.status(400).send('[candidatura] is empty');
+    if (!dataVote.candidatura.length) return res.status(400).send('[candidatura] is empty');
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
 
-    const isCircunscription = await Circunscripcion.findById(
-      dataVote.circunscripcion
-    );
+    const isCircunscription = await Circunscripcion.findById(dataVote.circunscripcion);
 
     if (!isCircunscription) throw Error('Circunscripcion is not found');
 
@@ -142,18 +135,14 @@ router.put('/:id', async (req, res) => {
 
   try {
     const { errorParitdo } = validatePartido(dataVote.candidatura);
-    if (errorParitdo)
-      return res.status(400).send(errorParitdo.details[0].message);
+    if (errorParitdo) return res.status(400).send(errorParitdo.details[0].message);
 
-    if (!dataVote.candidatura.length)
-      return res.status(400).send('[candidatura] is empty');
+    if (!dataVote.candidatura.length) return res.status(400).send('[candidatura] is empty');
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
 
-    const isCircunscription = await Circunscripcion.findById(
-      dataVote.circunscripcion
-    );
+    const isCircunscription = await Circunscripcion.findById(dataVote.circunscripcion);
 
     if (!isCircunscription) throw Error('Circunscripcion is not found');
 

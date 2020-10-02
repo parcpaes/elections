@@ -56,13 +56,9 @@ userSchema.statics.encryptPwd = async function (password = generatePassword()) {
 };
 
 userSchema.methods.generateAuthToken = function () {
-  return jwt.sign(
-    { _id: this._id, rol: this.rol },
-    config.get('jwtPrivateKey'),
-    {
-      expiresIn: '3h',
-    }
-  );
+  return jwt.sign({ _id: this._id, rol: this.rol }, config.get('jwtPrivateKey'), {
+    expiresIn: '3h',
+  });
 };
 
 userSchema.statics.login = async function (name, password) {

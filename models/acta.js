@@ -31,7 +31,7 @@ const actaSchema = new mongoose.Schema({
   },
   observaciones: {
     type: String,
-    minlength: 5,
+    minlength: 0,
   },
   filename: {
     type: String,
@@ -47,7 +47,7 @@ function validateActa(acta) {
     horaCierre: Joi.date().required(),
     codMesa: Joi.string().min(4).max(250).required(),
     empadronados: Joi.number().min(1).max(1024).required(),
-    observaciones: Joi.string().min(1),
+    observaciones: Joi.string().min(0),
     estado: Joi.string().valid(...actaEstados),
     filename: Joi.string(),
   });

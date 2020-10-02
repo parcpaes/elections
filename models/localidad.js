@@ -12,6 +12,7 @@ const localidadSchema = new mongoose.Schema({
 
 const Localidad = mongoose.model('Localidad', localidadSchema);
 
+// eslint-disable-next-line require-jsdoc
 function validateLocalidad(localidad) {
   const schema = Joi.object({
     name: Joi.string().min(4).max(100).required(),
