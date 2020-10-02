@@ -22,7 +22,7 @@ require('./startup/validation');
 require('./startup/routes')(app);
 require('./startup/db')();
 
-app.use(express.static(path.join(__dirname, '/dist/electionweb')));
+app.use(express.static(path.join(__dirname, '/dist')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname)));
 
 const port = process.env.PORT || 3000;
