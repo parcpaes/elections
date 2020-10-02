@@ -22,7 +22,7 @@ const votacionSchema = new mongoose.Schema({
   //   min: 1,
   //   max: 1024,
   // },
-  candidatura: {
+  candidaturas: {
     type: [partidoSchema],
     // required: true,
   },

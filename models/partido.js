@@ -80,6 +80,12 @@ const partidoSchema = new mongoose.Schema({
     min: 0,
     max: 255,
   },
+  votosValidos: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 1024,
+  },
 });
 
 // const Partido = mongoose.model('Partido', partidoSchema);
@@ -100,6 +106,7 @@ function validatePartido(partido) {
     LIBRE21: Joi.number().min(0).max(1024).required(),
     CC: Joi.number().min(0).max(1024).required(),
     JUNTOS: Joi.number().min(0).max(255),
+    votosValidos: Joi.number().min(1).max(1024),
   });
   return schema.validate(partido);
 }

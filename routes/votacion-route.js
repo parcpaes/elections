@@ -9,6 +9,17 @@ const _ = require('lodash');
 
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
 
+const siglasParidos = [
+  'CREEMOS',
+  'ADN',
+  'MASIPSP',
+  'FPV',
+  'PANBOL',
+  'LIBRE21',
+  'CC',
+  'JUNTOS',
+];
+
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -92,12 +103,12 @@ router.post('/', async (req, res) => {
   if (!isActa) return res.status(400).send('Acta is not found');
 
   try {
-    const { errorParitdo } = validatePartido(dataVote.candidatura);
+    const { errorParitdo } = validatePartido(dataVote.candidaturas);
     if (errorParitdo)
       return res.status(400).send(errorParitdo.details[0].message);
 
-    if (!dataVote.candidatura.length)
-      return res.status(400).send('[candidatura] is empty');
+    if (!dataVote.candidaturas.length)
+      return res.status(400).send('[candidaturas] is empty');
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
@@ -107,6 +118,8 @@ router.post('/', async (req, res) => {
     );
 
     if (!isCircunscription) throw Error('Circunscripcion is not found');
+
+    dataVote.candidaturas.map(validarSumaVotosValidso);
 
     const votacion = await Votacion.insertMany([
       {
@@ -122,7 +135,7 @@ router.post('/', async (req, res) => {
           'estado',
         ]),
         estado: dataVote.estado,
-        candidatura: dataVote.candidatura,
+        candidaturas: dataVote.candidaturas,
       },
     ]);
     res.send(votacion);
@@ -131,6 +144,18 @@ router.post('/', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
+
+// eslint-disable-next-line require-jsdoc
+function validarSumaVotosValidso(voto) {
+  const sumVote = function sum(votosSum = 0, index) {
+    if (index < 0) return votosSum;
+    votosSum = votosSum + voto[siglasParidos[index]];
+    return sum(votosSum, index - 1);
+  };
+  const total = sumVote(0, siglasParidos.length - 1);
+  if (voto.votosValidos !== total)
+    throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
+}
 
 router.put('/:id', async (req, res) => {
   const dataVote = req.body;
@@ -141,12 +166,12 @@ router.put('/:id', async (req, res) => {
   if (!isActa) return res.status(400).send('Acta is not found');
 
   try {
-    const { errorParitdo } = validatePartido(dataVote.candidatura);
+    const { errorParitdo } = validatePartido(dataVote.candidaturas);
     if (errorParitdo)
       return res.status(400).send(errorParitdo.details[0].message);
 
-    if (!dataVote.candidatura.length)
-      return res.status(400).send('[candidatura] is empty');
+    if (!dataVote.candidaturas.length)
+      return res.status(400).send('[candidaturas] is empty');
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
     if (!isRecinto) throw Error('Recinto is not found');
@@ -156,6 +181,8 @@ router.put('/:id', async (req, res) => {
     );
 
     if (!isCircunscription) throw Error('Circunscripcion is not found');
+
+    dataVote.candidaturas.map(validarSumaVotosValidso);
 
     const votacion = await Votacion.findOneAndUpdate(
       { _id: req.params.id },
@@ -173,7 +200,7 @@ router.put('/:id', async (req, res) => {
             'estado',
           ]),
           estado: dataVote.estado,
-          candidatura: dataVote.candidatura,
+          candidaturas: dataVote.candidaturas,
         },
       },
       { new: true }
