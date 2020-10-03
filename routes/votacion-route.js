@@ -155,8 +155,9 @@ function validarSumaVotosValidso(voto) {
   const total = sumVote(0, siglasParidos.length - 1);
   console.log('total serve: ' + total);
   console.log('total client: ' + voto.votosValidos);
+  const mess = 'total server: ' + total + " and total client " + voto.votosValidos;
   if (voto.votosValidos !== total)
-    throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
+    throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura + " " + mess);
 }
 
 router.put('/:id', async (req, res) => {
