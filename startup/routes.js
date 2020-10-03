@@ -11,7 +11,7 @@ const actaRoute = require('../routes/acta-route');
 const userRoute = require('../routes/user-route');
 const authRoute = require('../routes/auth-route');
 const voteRoure = require('../routes/votacion-route');
-
+const reportesRoute = require('../routes/reportes-route');
 const error = require('../middleware/error-middleware');
 
 module.exports = function (app) {
@@ -27,5 +27,6 @@ module.exports = function (app) {
   // app.use('/api/partidos', partidoRoute);
   app.use('/api/actas', actaRoute);
   app.use('/api/votacion', voteRoure);
+  app.use('/api/reportes', reportesRoute);
   app.use(error);
 };

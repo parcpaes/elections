@@ -69,6 +69,7 @@ router.post('/', async (req, res) => {
     horaCierre: req.body.horaCierre,
     empadronados: req.body.empadronados,
     estado: req.body.estado,
+    observaciones: req.body.observaciones,
   });
   await acta.save();
   res.send(acta);
@@ -86,10 +87,9 @@ router.put('/:id', async (req, res) => {
     req.params.id,
     {
       codMesa: req.body.codMesa,
-      horaApertura: req.body.horaApertura,
-      horaCierre: req.body.horaCierre,
       empadronados: req.body.empadronados,
       estado: req.body.estado,
+      observaciones: req.body.observaciones,
     },
     { new: true }
   );
