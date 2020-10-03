@@ -32,6 +32,7 @@ const projectPipe = {
     PANBOL: { $multiply: [{ $divide: ['$PANBOL', '$votosValidos'] }, 100] },
     LIBRE21: { $multiply: [{ $divide: ['$LIBRE21', '$votosValidos'] }, 100] },
     CC: { $multiply: [{ $divide: ['$CC', '$votosValidos'] }, 100] },
+    votosValidos: 1,
     votosBlancos: 1,
     votosNullos: 1,
     actasValidas: 1,

@@ -153,6 +153,8 @@ function validarSumaVotosValidso(voto) {
     return sum(votosSum, index - 1);
   };
   const total = sumVote(0, siglasParidos.length - 1);
+  console.log('total serve: ' + total);
+  console.log('total client: ' + voto.votosValidos);
   if (voto.votosValidos !== total)
     throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
 }
