@@ -21,6 +21,7 @@ const Circunscripcion = mongoose.model(
   circunscripcionSchema
 );
 
+// eslint-disable-next-line require-jsdoc
 function validateCircunscripcion(circunscripcion) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),

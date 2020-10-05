@@ -1,14 +1,22 @@
 // const auth = require('../middleware/auth-middleware');
 const { Provincia, validate } = require('../models/provincia');
+const {
+  Circunscripcion,
+  circunscripcionSchema,
+} = require('../models/circunscripcion');
 const express = require('express');
+const mongoose = require('mongoose');
 
 /* eslint-disable new-cap */
 const router = express.Router();
 
+const idType = (id) => {
+  // eslint-disable-next-line new-cap
+  return mongoose.Types.ObjectId(id);
+};
+
 router.get('/', async (req, res) => {
-  const provincia = await Provincia.find()
-    .sort('name')
-    .populate('circunscripcions', '_id name');
+  const provincia = await Provincia.find();
   res.send(provincia);
 });
 
@@ -28,12 +36,23 @@ router.post('/', async (req, res) => {
   const isProvincia = await Provincia.findOne({ name: req.body.name });
   if (isProvincia) return res.status(400).send('Provincia already register');
 
+  const listCircunscripcionsId = [];
+  req.body.circunscripcions.forEach((value) => {
+    listCircunscripcionsId.push(idType(value));
+  });
+  if (!listCircunscripcionsId)
+    return res.status(400).send('provincia.circunscripcions is empty');
+
+  const circunscripcions = await Circunscripcion.find({
+    _id: { $in: listCircunscripcionsId },
+  });
+
   const provincia = new Provincia({
     name: req.body.name,
+    circunscripcions: circunscripcions,
   });
 
   await provincia.save();
-
   res.send(provincia);
 });
 
@@ -41,10 +60,24 @@ router.put('/:id', async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
+  const listCircunscripcionsId = [];
+  req.body.circunscripcions.forEach((value) => {
+    listCircunscripcionsId.push(idType(value));
+  });
+  if (!listCircunscripcionsId)
+    return res.status(400).send('provincia.circunscripcions is empty');
+
+  const circunscripcions = await Circunscripcion.find({
+    _id: { $in: listCircunscripcionsId },
+  });
+
   const provincia = await Provincia.findByIdAndUpdate(
     req.params.id,
     {
-      name: req.body.name,
+      $set: {
+        name: req.body.name,
+        circunscripcions: circunscripcions,
+      },
     },
     { new: true }
   );

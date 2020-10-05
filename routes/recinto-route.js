@@ -84,6 +84,7 @@ router.put('/:id', async (req, res) => {
 
   const localidad = await Localidad.findOne({ _id: req.body.localidadId });
   if (!localidad) return res.status(400).send('Localidad was not found');
+
   const localizacion = { type: 'Point', coordinates: req.body.localizacion };
   const recinto = await Recinto.findByIdAndUpdate(
     req.params.id,
@@ -94,6 +95,7 @@ router.put('/:id', async (req, res) => {
         circunscripcion: circunscripcion,
         provincia: _.pick(provincia, ['_id', 'name']),
         municipio: _.pick(municipio, ['_id', 'name']),
+        localidad: localidad,
         mesas: req.body.mesas,
         totalMesas: req.body.totalMesas,
         totalHabilitados: req.body.totalHabilitados,

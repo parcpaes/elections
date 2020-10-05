@@ -20,9 +20,18 @@ const provinciaSchema = new mongoose.Schema({
 
 const Provincia = mongoose.model('Provincia', provinciaSchema);
 
+const circunscripcionValidSchema = {
+  id: Joi.objectId().required(),
+  name: Joi.string().min(1).max(512).required(),
+};
+// eslint-disable-next-line require-jsdoc
 function validateProvincia(provincia) {
   const schema = Joi.object({
     name: Joi.string().min(4).max(100).required(),
+    circunscripcions: Joi.array()
+      .min(1)
+      .items(Joi.objectId().required())
+      .required(),
   });
   return schema.validate(provincia);
 }

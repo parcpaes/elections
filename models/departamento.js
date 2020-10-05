@@ -12,9 +12,10 @@ const departamentoSchema = new mongoose.Schema({
 
 const Departamento = mongoose.model('Departamento', departamentoSchema);
 
+// eslint-disable-next-line require-jsdoc
 function validateDepartamento(departamento) {
   const schema = Joi.object({
-    name: Joi.string().min(5).max(100).required(),
+    name: Joi.string().min(4).max(100).required(),
   });
   return schema.validate(departamento);
 }
