@@ -1,6 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const circunscripcionSchema = require('./circunscripcion');
+const { circunscripcionSchema } = require('./circunscripcion');
 
 const provinciaSchema = new mongoose.Schema({
   name: {
@@ -12,8 +12,8 @@ const provinciaSchema = new mongoose.Schema({
   },
   circunscripcions: [
     {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Circunscripcion',
+      type: circunscripcionSchema,
+      required: true,
     },
   ],
 });

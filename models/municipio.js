@@ -2,7 +2,7 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const provinciaSchema = require('./provincia');
-
+const { circunscripcionSchema } = require('./circunscripcion');
 const municipioSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -14,6 +14,12 @@ const municipioSchema = new mongoose.Schema({
     type: provinciaSchema,
     required: true,
   },
+  circunscripcions: [
+    {
+      type: circunscripcionSchema,
+      required: true,
+    },
+  ],
 });
 
 const Municipio = mongoose.model('Municipio', municipioSchema);

@@ -14,13 +14,6 @@ const circunscripcionSchema = new mongoose.Schema({
     type: departamentoSchema,
     required: true,
   },
-  provincias: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Provincia',
-      required: true,
-    },
-  ],
 });
 
 const Circunscripcion = mongoose.model(
