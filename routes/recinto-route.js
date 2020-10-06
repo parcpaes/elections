@@ -38,8 +38,8 @@ router.post('/', async (req, res) => {
   const municipio = await Municipio.findOne({ _id: req.body.municipioId });
   if (!municipio) return res.status(400).send('Municipio was not found');
 
-  const localidad = await Localidad.findOne({ _id: req.body.localidadId });
-  if (!localidad) return res.status(400).send('Localidad was not found');
+  // const localidad = await Localidad.findOne({ _id: req.body.localidadId });
+  // if (!localidad) return res.status(400).send('Localidad was not found');
   try {
     const localizacion = { type: 'Point', coordinates: req.body.localizacion };
     const recinto = new Recinto({
@@ -48,7 +48,7 @@ router.post('/', async (req, res) => {
       circunscripcion: circunscripcion,
       provincia: _.pick(provincia, ['_id', 'name']),
       municipio: _.pick(municipio, ['_id', 'name']),
-      localidad: localidad,
+      localidad: req.body.localidad,
       mesas: req.body.mesas,
       totalMesas: req.body.totalMesas,
       totalHabilitados: req.body.totalHabilitados,
@@ -82,8 +82,8 @@ router.put('/:id', async (req, res) => {
   const municipio = await Municipio.findOne({ _id: req.body.municipioId });
   if (!municipio) return res.status(400).send('Municipio was not found');
 
-  const localidad = await Localidad.findOne({ _id: req.body.localidadId });
-  if (!localidad) return res.status(400).send('Localidad was not found');
+  // const localidad = await Localidad.findOne({ _id: req.body.localidadId });
+  // if (!localidad) return res.status(400).send('Localidad was not found');
 
   const localizacion = { type: 'Point', coordinates: req.body.localizacion };
   const recinto = await Recinto.findByIdAndUpdate(
@@ -95,7 +95,7 @@ router.put('/:id', async (req, res) => {
         circunscripcion: circunscripcion,
         provincia: _.pick(provincia, ['_id', 'name']),
         municipio: _.pick(municipio, ['_id', 'name']),
-        localidad: localidad,
+        localidad: req.body.localidad,
         mesas: req.body.mesas,
         totalMesas: req.body.totalMesas,
         totalHabilitados: req.body.totalHabilitados,
