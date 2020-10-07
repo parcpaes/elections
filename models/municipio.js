@@ -6,6 +6,7 @@ const { circunscripcionSchema } = require('./circunscripcion');
 
 const circunscripcionSchemaU = circunscripcionSchema.clone();
 circunscripcionSchemaU.remove('departamento');
+circunscripcionSchemaU.remove('provincias');
 
 const municipioSchema = new mongoose.Schema({
   name: {
