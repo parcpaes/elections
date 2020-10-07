@@ -77,7 +77,7 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   // console.log('update');
-  const { error } = validateActa(req.body);
+  const { error } = validateActaUpdate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
@@ -120,6 +120,17 @@ function validateImage(fileData) {
     contentType: Joi.string().valid(...images),
   });
   return schema.validate(fileData);
+}
+
+// eslint-disable-next-line require-jsdoc
+function validateActaUpdate(acta) {
+  const schema = Joi.object({
+    codMesa: Joi.string().min(4).max(250).required(),
+    empadronados: Joi.number().min(1).max(1024).required(),
+    estado: Joi.string().valid(...actaEstados),
+    observaciones: Joi.string().min(0),
+  });
+  return schema.validate(acta);
 }
 
 module.exports = router;
