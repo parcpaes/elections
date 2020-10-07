@@ -30,7 +30,7 @@ const Circunscripcion = mongoose.model(
 function validateCircunscripcion(circunscripcion) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
-    departamentoId: Joi.objectId().required()
+    departamentoId: Joi.objectId().required(),
   });
   return schema.validate(circunscripcion);
 }

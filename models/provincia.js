@@ -21,9 +21,7 @@ const provinciaSchema = new mongoose.Schema({
   ],
 });
 
-const Provincia = mongoose
-  .model('Provincia', provinciaSchema)
-  .schema.path('departamento');
+const Provincia = mongoose.model('Provincia', provinciaSchema);
 
 // eslint-disable-next-line require-jsdoc
 function validateProvincia(provincia) {
@@ -37,5 +35,5 @@ function validateProvincia(provincia) {
   return schema.validate(provincia);
 }
 module.exports.Provincia = Provincia;
-exports.validate = validateProvincia;
+module.exports.validate = validateProvincia;
 module.exports.provinciaSchema = provinciaSchema;

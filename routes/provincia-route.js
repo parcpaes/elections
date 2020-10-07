@@ -4,6 +4,7 @@ const {
   Circunscripcion,
   circunscripcionSchema,
 } = require('../models/circunscripcion');
+
 const express = require('express');
 const mongoose = require('mongoose');
 /* eslint-disable new-cap */
@@ -42,9 +43,12 @@ router.post('/', async (req, res) => {
   if (!listCircunscripcionsId)
     return res.status(400).send('provincia.circunscripcions is empty');
 
-  const circunscripcions = await Circunscripcion.find({
-    _id: { $in: listCircunscripcionsId },
-  }, { name: 1, departamento: 1 });
+  const circunscripcions = await Circunscripcion.find(
+    {
+      _id: { $in: listCircunscripcionsId },
+    },
+    { name: 1, departamento: 1 }
+  );
 
   const provincia = new Provincia({
     name: req.body.name,
@@ -66,10 +70,12 @@ router.put('/:id', async (req, res) => {
   if (!listCircunscripcionsId)
     return res.status(400).send('provincia.circunscripcions is empty');
 
-  const circunscripcions = await Circunscripcion.find({
-    _id: { $in: listCircunscripcionsId },
-  });
-
+  const circunscripcions = await Circunscripcion.find(
+    {
+      _id: { $in: listCircunscripcionsId },
+    },
+    { name: 1, departamento: 1 }
+  );
   const provincia = await Provincia.findByIdAndUpdate(
     req.params.id,
     {
