@@ -6,7 +6,6 @@ const {
 } = require('../models/circunscripcion');
 const express = require('express');
 const mongoose = require('mongoose');
-
 /* eslint-disable new-cap */
 const router = express.Router();
 
@@ -45,7 +44,7 @@ router.post('/', async (req, res) => {
 
   const circunscripcions = await Circunscripcion.find({
     _id: { $in: listCircunscripcionsId },
-  });
+  }, { name: 1, departamento: 1 });
 
   const provincia = new Provincia({
     name: req.body.name,

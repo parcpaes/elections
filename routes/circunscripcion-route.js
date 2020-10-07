@@ -10,7 +10,7 @@ Fawn.init(mongoose);
 
 router.get('/', async (req, res) => {
   const circunscripcion = await Circunscripcion.find().populate(
-    'provincia',
+    'provincias',
     'name'
   );
   res.send(circunscripcion);

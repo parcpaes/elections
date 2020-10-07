@@ -103,12 +103,9 @@ function validateRecinto(recinto) {
     provinciaId: Joi.objectId().required(),
     municipioId: Joi.objectId().required(),
     localidad: Joi.string().min(4).max(255),
-<<<<<<< HEAD
-=======
     mesas: Joi.array().min(1).items(Joi.object(mesaValidSchema)).required(),
     totalMesas: Joi.number().min(1).max(512).required(),
     totalHabilitados: Joi.number().min(1),
->>>>>>> f62aeff02f3814757713940464b58243bd26cd10
     localizacion: Joi.array().items(Joi.number()),
   });
 

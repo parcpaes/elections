@@ -2,6 +2,9 @@ const Joi = require('joi');
 const mongoose = require('mongoose');
 const { circunscripcionSchema } = require('./circunscripcion');
 
+const circunscripcionSchemaU = circunscripcionSchema.clone();
+circunscripcionSchemaU.remove('provincias');
+
 const provinciaSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -12,7 +15,7 @@ const provinciaSchema = new mongoose.Schema({
   },
   circunscripcions: [
     {
-      type: circunscripcionSchema,
+      type: circunscripcionSchemaU,
       required: true,
     },
   ],
