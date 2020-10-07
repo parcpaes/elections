@@ -9,6 +9,9 @@ const { mesaSchema } = require('./mesa');
 
 const typeElection = ['Uninominal', 'Especial'];
 
+const circunscripcionSchemaU = circunscripcionSchema.clone();
+circunscripcionSchemaU.remove('provincias');
+
 const provinciaSchemaU = provinciaSchema.clone();
 provinciaSchemaU.remove('circunscripcions');
 
@@ -29,7 +32,7 @@ const recintoSchema = new mongoose.Schema({
     required: true,
   },
   circunscripcion: {
-    type: circunscripcionSchema,
+    type: circunscripcionSchemaU,
     required: true,
   },
   provincia: {
