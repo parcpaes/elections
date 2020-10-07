@@ -17,7 +17,6 @@ const siglasParidos = [
   'PANBOL',
   'LIBRE21',
   'CC',
-  'JUNTOS',
 ];
 
 // eslint-disable-next-line new-cap
@@ -65,25 +64,6 @@ router.get('/', async (req, res) => {
   res.send(votacion);
 });
 
-router.get('/test/:id', async (req, res) => {
-  const { circunscripcionId, municipioId, provinciaId } = req.body;
-  console.log('test1 ..');
-  const votacion = await Votacion.aggregate([
-    {
-      $match: {
-        'circunscripcion._id': idType(circunscripcionId),
-        'circunscripcion.provincias': {
-          $in: [idType(provinciaId)],
-        },
-        'recinto.municipio._id': idType(municipioId),
-      },
-    },
-  ]);
-  // "circunscripcion.provincias": { $in: [ObjectId("5f5ac09ffa74ada37adf107a")]}
-  console.log(votacion);
-  res.send('votacion');
-});
-
 router.get('/:id', async (req, res) => {
   const votacion = await Votacion.findById(req.params.id);
   if (!votacion)
@@ -109,21 +89,14 @@ router.post('/', async (req, res) => {
     if (!dataVote.candidaturas || !dataVote.candidaturas.length)
       return res.status(400).send('[candidaturas] is empty');
 
-    const isRecinto = await Recinto.findById(dataVote.recinto);
+    const isRecinto = await Recinto.findById(dataVote.recinto, { mesas: 0 });
     if (!isRecinto) throw Error('Recinto is not found');
-
-    const isCircunscription = await Circunscripcion.findById(
-      dataVote.circunscripcion
-    );
-
-    if (!isCircunscription) throw Error('Circunscripcion is not found');
 
     dataVote.candidaturas.map(validarSumaVotosValidso);
 
     const votacion = await Votacion.insertMany([
       {
         numeroMesa: dataVote.numeroMesa,
-        circunscripcion: isCircunscription,
         recinto: isRecinto,
         acta: _.pick(isActa, [
           '_id',
@@ -155,8 +128,8 @@ function validarSumaVotosValidso(voto) {
   const total = sumVote(0, siglasParidos.length - 1);
   console.log('total serve: ' + total);
   console.log('total client: ' + voto.votosValidos);
-  // if (voto.votosValidos !== total)
-  //   throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
+  if (voto.votosValidos !== total)
+    throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
 }
 
 router.put('/:id', async (req, res) => {
@@ -175,14 +148,8 @@ router.put('/:id', async (req, res) => {
     if (!dataVote.candidaturas.length)
       return res.status(400).send('[candidaturas] is empty');
 
-    const isRecinto = await Recinto.findById(dataVote.recinto);
+    const isRecinto = await Recinto.findById(dataVote.recinto, { mesas: 0 });
     if (!isRecinto) throw Error('Recinto is not found');
-
-    const isCircunscription = await Circunscripcion.findById(
-      dataVote.circunscripcion
-    );
-
-    if (!isCircunscription) throw Error('Circunscripcion is not found');
 
     dataVote.candidaturas.map(validarSumaVotosValidso);
     console.log(dataVote.estado);
@@ -191,7 +158,6 @@ router.put('/:id', async (req, res) => {
       {
         $set: {
           numeroMesa: dataVote.numeroMesa,
-          circunscripcion: isCircunscription,
           recinto: isRecinto,
           acta: _.pick(isActa, [
             '_id',
@@ -213,13 +179,5 @@ router.put('/:id', async (req, res) => {
     res.status(400).send(error.message);
   }
 });
-
-// eslint-disable-next-line require-jsdoc
-function validateImage(fileData) {
-  const schema = Joi.object({
-    contentType: Joi.string().valid(...images),
-  });
-  return schema.validate(fileData);
-}
 
 module.exports = router;

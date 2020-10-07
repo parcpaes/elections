@@ -6,6 +6,7 @@ const mesaSchema = new mongoose.Schema({
     type: Number,
     required: true,
     unique: true,
+    sparse: true,
     min: 1,
     max: 512,
   },

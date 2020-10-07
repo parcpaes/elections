@@ -18,7 +18,7 @@ const groupPipe = {
     actasValidas: { $sum: 1 },
     mesas: {
       $addToSet: {
-        recintos: { id: '$recinto._id', mesas: '$recinto.numeroMesas' },
+        recintos: { id: '$recinto._id', mesas: '$recinto.totalMesas' },
       },
     },
   },

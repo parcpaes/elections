@@ -11,6 +11,7 @@ const typeElection = ['Uninominal', 'Especial'];
 
 const circunscripcionSchemaU = circunscripcionSchema.clone();
 circunscripcionSchemaU.remove('provincias');
+circunscripcionSchemaU.remove('departamento');
 
 const provinciaSchemaU = provinciaSchema.clone();
 provinciaSchemaU.remove('circunscripcions');
@@ -61,7 +62,6 @@ const recintoSchema = new mongoose.Schema({
   totalHabilitados: {
     type: Number,
     min: 1,
-    max: 1024,
   },
   localizacion: {
     type: {
