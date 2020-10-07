@@ -1,38 +1,33 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
-const recintoSchema = require('./recinto');
 
 const mesaSchema = new mongoose.Schema({
-  name: {
+  mesa: {
     type: Number,
     required: true,
     unique: true,
     min: 1,
-    max: 1024,
+    max: 512,
   },
-  cantidad: {
+  habilitados: {
     type: Number,
     required: true,
     min: 1,
     max: 1024,
-  },
-  recinto: {
-    type: recintoSchema,
-    // required:true
   },
 });
 
 const Mesa = mongoose.model('Mesa', mesaSchema);
 
+// eslint-disable-next-line require-jsdoc
 function validateMesa(mesa) {
   const schema = Joi.object({
-    name: Joi.number().min(1).max(500).required(),
-    cantidad: Joi.number().min(1).max(1024).required(),
+    mesa: Joi.number().min(1).max(512).required(),
+    habilitados: Joi.number().min(1).max(1024).required(),
   });
-
   return schema.validate(mesa);
 }
 
 module.exports.Mesa = Mesa;
-exports.validate = validateMesa;
+exports.validateMesa = validateMesa;
 module.exports.mesaSchema = mesaSchema;

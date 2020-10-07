@@ -106,7 +106,6 @@ router.post('/', async (req, res) => {
     const { errorParitdo } = validatePartido(dataVote.candidaturas);
     if (errorParitdo)
       return res.status(400).send(errorParitdo.details[0].message);
-    // console.log(dataVote.candidaturas)
     if (!dataVote.candidaturas || !dataVote.candidaturas.length)
       return res.status(400).send('[candidaturas] is empty');
 
@@ -149,17 +148,15 @@ router.post('/', async (req, res) => {
 function validarSumaVotosValidso(voto) {
   const sumVote = function sum(votosSum = 0, index) {
     if (index < 0) return votosSum;
-    votosSum = votosSum + parseInt(voto[siglasParidos[index]]);
-    console.log('sums');
-    console.log(votosSum);
+    console.log(voto[siglasParidos[index]]);
+    votosSum = votosSum + voto[siglasParidos[index]];
     return sum(votosSum, index - 1);
   };
   const total = sumVote(0, siglasParidos.length - 1);
   console.log('total serve: ' + total);
   console.log('total client: ' + voto.votosValidos);
-  const mess = 'total server: ' + total + " and total client " + voto.votosValidos;
   // if (voto.votosValidos !== total)
-  // throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura + " " + mess);
+  //   throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
 }
 
 router.put('/:id', async (req, res) => {

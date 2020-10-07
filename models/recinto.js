@@ -1,10 +1,20 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
+const { circunscripcionSchema } = require('./circunscripcion');
+const { provinciaSchema } = require('./provincia');
 const { municipioSchema } = require('./municipio');
 const { localidadSchema } = require('./localidad');
-const { indexOf } = require('lodash');
+const { mesaSchema } = require('./mesa');
+
 const typeElection = ['Uninominal', 'Especial'];
+
+const provinciaSchemaU = provinciaSchema.clone();
+provinciaSchemaU.remove('circunscripcions');
+
+const municipioSchemaU = municipioSchema.clone();
+municipioSchemaU.remove('provincia');
+municipioSchemaU.remove('circunscripcions');
 
 const recintoSchema = new mongoose.Schema({
   institucion: {
@@ -18,28 +28,49 @@ const recintoSchema = new mongoose.Schema({
     enum: typeElection,
     required: true,
   },
-  numeroMesas: {
-    type: Number,
+  circunscripcion: {
+    type: circunscripcionSchema,
     required: true,
-    min: 1,
-    max: 1024,
+  },
+  provincia: {
+    type: provinciaSchemaU,
+    required: true,
   },
   municipio: {
-    type: municipioSchema,
-    // required:true
+    type: municipioSchemaU,
+    required: true,
   },
   localidad: {
     type: String,
     minlength: 4,
-    maxlength: 255
+    maxlength: 255,
+  },
+  mesas: {
+    type: [mesaSchema],
+    required: true,
+  },
+  totalMesas: {
+    type: Number,
+    required: true,
+    min: 1,
+    max: 512,
+  },
+  totalHabilitados: {
+    type: Number,
+    min: 1,
+    max: 1024,
   },
   localizacion: {
-    type: [Number],
-    optional: true,
-    // index:{
-    //     unique:true,
-    //     sparse:true
-    // }
+    type: {
+      type: String,
+      enum: ['Point'],
+      default: 'Point',
+    },
+    coordinates: {
+      type: [Number],
+      default: [0, 0],
+      index: '2dsphere',
+    },
   },
 });
 
@@ -53,6 +84,10 @@ const recintoSchema = new mongoose.Schema({
 
 const Recinto = mongoose.model('Recinto', recintoSchema);
 
+const mesaValidSchema = {
+  mesa: Joi.number().min(1).max(512).required(),
+  habilitados: Joi.number().min(1).max(1024).required(),
+};
 // eslint-disable-next-line require-jsdoc
 function validateRecinto(recinto) {
   const schema = Joi.object({
@@ -61,9 +96,16 @@ function validateRecinto(recinto) {
       .items(Joi.string().valid(...typeElection))
       .min(1)
       .required(),
-    numeroMesas: Joi.number().min(1).max(1024).required(),
+    circunscripcionId: Joi.objectId().required(),
+    provinciaId: Joi.objectId().required(),
     municipioId: Joi.objectId().required(),
     localidad: Joi.string().min(4).max(255),
+<<<<<<< HEAD
+=======
+    mesas: Joi.array().min(1).items(Joi.object(mesaValidSchema)).required(),
+    totalMesas: Joi.number().min(1).max(512).required(),
+    totalHabilitados: Joi.number().min(1),
+>>>>>>> f62aeff02f3814757713940464b58243bd26cd10
     localizacion: Joi.array().items(Joi.number()),
   });
 

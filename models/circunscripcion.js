@@ -14,13 +14,6 @@ const circunscripcionSchema = new mongoose.Schema({
     type: departamentoSchema,
     required: true,
   },
-  provincias: [
-    {
-      type: mongoose.Schema.Types.ObjectId,
-      ref: 'Provincia',
-      required: true,
-    },
-  ],
 });
 
 const Circunscripcion = mongoose.model(
@@ -28,6 +21,7 @@ const Circunscripcion = mongoose.model(
   circunscripcionSchema
 );
 
+// eslint-disable-next-line require-jsdoc
 function validateCircunscripcion(circunscripcion) {
   const schema = Joi.object({
     name: Joi.string().min(3).max(50).required(),
