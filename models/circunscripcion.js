@@ -2,7 +2,6 @@ const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
 const { departamentoSchema } = require('./departamento');
-const { provinciaSchema } = require('./provincia');
 const circunscripcionSchema = new mongoose.Schema({
   name: {
     type: String,
@@ -12,7 +11,8 @@ const circunscripcionSchema = new mongoose.Schema({
   },
   provincias: [
     {
-      type: provinciaSchema,
+      type: mongoose.Schema.Types.ObjectId,
+      ref: 'Provincia',
     },
   ],
   departamento: {
