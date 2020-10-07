@@ -18,12 +18,10 @@ const provinciaSchema = new mongoose.Schema({
   ],
 });
 
-const Provincia = mongoose.model('Provincia', provinciaSchema);
+const Provincia = mongoose
+  .model('Provincia', provinciaSchema)
+  .schema.path('departamento');
 
-const circunscripcionValidSchema = {
-  id: Joi.objectId().required(),
-  name: Joi.string().min(1).max(512).required(),
-};
 // eslint-disable-next-line require-jsdoc
 function validateProvincia(provincia) {
   const schema = Joi.object({
@@ -35,7 +33,6 @@ function validateProvincia(provincia) {
   });
   return schema.validate(provincia);
 }
-
 module.exports.Provincia = Provincia;
-module.exports.validate = validateProvincia;
+exports.validate = validateProvincia;
 module.exports.provinciaSchema = provinciaSchema;
