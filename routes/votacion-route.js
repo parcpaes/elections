@@ -106,8 +106,8 @@ router.post('/', async (req, res) => {
     const { errorParitdo } = validatePartido(dataVote.candidaturas);
     if (errorParitdo)
       return res.status(400).send(errorParitdo.details[0].message);
-
-    if (!dataVote.candidaturas.length)
+    // console.log(dataVote.candidaturas)
+    if (!dataVote.candidaturas || !dataVote.candidaturas.length)
       return res.status(400).send('[candidaturas] is empty');
 
     const isRecinto = await Recinto.findById(dataVote.recinto);
@@ -149,15 +149,17 @@ router.post('/', async (req, res) => {
 function validarSumaVotosValidso(voto) {
   const sumVote = function sum(votosSum = 0, index) {
     if (index < 0) return votosSum;
-    votosSum = votosSum + voto[siglasParidos[index]];
+    votosSum = votosSum + parseInt(voto[siglasParidos[index]]);
+    console.log('sums');
+    console.log(votosSum);
     return sum(votosSum, index - 1);
   };
   const total = sumVote(0, siglasParidos.length - 1);
   console.log('total serve: ' + total);
   console.log('total client: ' + voto.votosValidos);
   const mess = 'total server: ' + total + " and total client " + voto.votosValidos;
-  if (voto.votosValidos !== total)
-    throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura + " " + mess);
+  // if (voto.votosValidos !== total)
+  // throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura + " " + mess);
 }
 
 router.put('/:id', async (req, res) => {
@@ -186,7 +188,7 @@ router.put('/:id', async (req, res) => {
     if (!isCircunscription) throw Error('Circunscripcion is not found');
 
     dataVote.candidaturas.map(validarSumaVotosValidso);
-
+    console.log(dataVote.estado);
     const votacion = await Votacion.findOneAndUpdate(
       { _id: req.params.id },
       {

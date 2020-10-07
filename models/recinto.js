@@ -29,7 +29,9 @@ const recintoSchema = new mongoose.Schema({
     // required:true
   },
   localidad: {
-    type: localidadSchema,
+    type: String,
+    minlength: 4,
+    maxlength: 255
   },
   localizacion: {
     type: [Number],
@@ -61,7 +63,7 @@ function validateRecinto(recinto) {
       .required(),
     numeroMesas: Joi.number().min(1).max(1024).required(),
     municipioId: Joi.objectId().required(),
-    localidadId: Joi.objectId().required(),
+    localidad: Joi.string().min(4).max(255),
     localizacion: Joi.array().items(Joi.number()),
   });
 

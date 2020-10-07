@@ -77,8 +77,8 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   // console.log('update');
-  const { error } = validateActa(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  // const { error } = validateActa(req.body);
+  // if (error) return res.status(400).send(error.details[0].message);
 
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
   if (!isActa) return res.status(400).send('Acta is not found');
