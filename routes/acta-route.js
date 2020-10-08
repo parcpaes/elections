@@ -7,7 +7,8 @@ const uploadFile = require('../middleware/gridfilesStorage-middleware');
 const _ = require('lodash');
 const Joi = require('joi');
 const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
-const actaEstados = ['Anulada', 'Verificado', 'Enviado'];
+const actaEstados = ['Anulada', 'Verificado', 'Enviado', 'Observado'];
+
 const mongoDb = mongoose.connection;
 let gridfsbucket;
 // console.log(mongoDb.eventNames());
@@ -128,8 +129,7 @@ function validateActaUpdate(acta) {
   const schema = Joi.object({
     codMesa: Joi.string().min(4).max(250).required(),
     empadronados: Joi.number().min(1).max(1024).required(),
-    estado: Joi.string().valid(...actaEstados),
-    observaciones: Joi.string()
+    estado: Joi.string().valid(...actaEstados)
   });
   return schema.validate(acta);
 }
