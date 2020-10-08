@@ -9,6 +9,9 @@ const app = express();
 const path = require('path');
 const bodyParser = require('body-parser');
 // const methodOverride = require('method-override');
+const helmet = require('helmet');
+app.use(helmet());
+
 app.use(bodyParser.json());
 // app.use(methodOverride('_method'));
 

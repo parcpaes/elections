@@ -5,7 +5,7 @@ const { actaSchema } = require('./acta');
 const { recintoSchema } = require('./recinto');
 const { partidoSchema } = require('./partido');
 
-const votationEstado = ['Enviado', 'Verificado', 'Anulada'];
+const votationEstado = ['Enviado', 'Verificado', 'Anulada', 'Observado'];
 const listTypeElection = [
   'Presidente y Vicepresidente',
   'Diputados Uninominales',

@@ -1,7 +1,23 @@
 const { Votacion, validate } = require('../models/votacion');
 const express = require('express');
 const router = express.Router();
-const mongoose = require('mongoose');
+const { ObjectId } = require('mongoose').Types;
+const Joi = require('joi');
+Joi.objectId = require('joi-objectid')(Joi);
+const _ = require('lodash');
+const { values } = require('lodash');
+
+const listTypeElection = {
+  presidente: 'Presidente y Vicepresidente',
+  diputado: 'Diputados Uninominales',
+  diputadoEspecial: 'Diputados Especiales',
+};
+// const firstMatch = {
+//   'recinto._id': null,
+//   'recinto.municipio._id': null,
+//   'recinto.provincia._id': null,
+//   'recinto.circunscripcion._id': null,
+// };
 const groupPipe = {
   $group: {
     _id: '$candidaturas.candidatura',
@@ -40,33 +56,46 @@ const projectPipe = {
     total: { $add: ['$votosValidos', '$votosBlancos', '$votosNullos'] },
   },
 };
-
-const idType = (id) => {
-  // eslint-disable-next-line new-cap
-  return mongoose.Types.ObjectId(id);
+// eslint-disable-next-line require-jsdoc
+const idType = (result, value, key) => {
+  if (key == 'recinto') {
+    result[`${key}._id`] = ObjectId(value);
+  } else {
+    result[`recinto.${key}._id`] = ObjectId(value);
+  }
+  return result;
 };
 
-router.get('/recinto/:id', async (req, res) => {
-  const votacion = await Votacion.aggregate([
-    {
-      $match: {
-        'recinto._id': idType(req.params.id),
-        estado: 'Verificado',
+router.get('/', async (req, res) => {
+  const { error } = validateQuery(req.query);
+  if (error) return res.status(400).send(error.details[0].message);
+  try {
+    const firstMatch = _.chain(req.query)
+      .omit(['eleccion'])
+      .reduce(idType, {})
+      .value();
+    firstMatch.estado = 'Verificado';
+    console.log(firstMatch);
+    const votacion = await Votacion.aggregate([
+      {
+        $match: firstMatch,
       },
-    },
-    {
-      $unwind: '$candidaturas',
-    },
-    {
-      $match: { 'candidaturas.candidatura': 'Presidente y Vicepresidente' },
-    },
-    groupPipe,
-    projectPipe,
-  ]);
-  res.send(votacion);
+      {
+        $unwind: '$candidaturas',
+      },
+      {
+        $match: { 'candidaturas.candidatura': 'Presidente y Vicepresidente' },
+      },
+      groupPipe,
+      projectPipe,
+    ]);
+    res.send(votacion);
+  } catch (error) {
+    console.log(error);
+  }
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/', async (req, res) => {
   const votacion = await Votacion.findById(req.params.id);
   if (!votacion)
     return res
@@ -76,4 +105,23 @@ router.get('/:id', async (req, res) => {
   res.send(votacion);
 });
 
+// eslint-disable-next-line require-jsdoc
+function validateQuery(queryparams) {
+  const schema = Joi.object({
+    eleccion: Joi.string()
+      .valid(...Object.keys(listTypeElection))
+      .required(),
+    recinto: Joi.objectId(),
+    municipio: Joi.objectId(),
+    provincia: Joi.objectId(),
+    circunscripcion: Joi.objectId(),
+  });
+  return schema.validate(queryparams);
+}
+const listTypeElection = {
+  presidente: 'Presidente y Vicepresidente',
+  diputado: 'Diputados Uninominales',
+  diputadoEspecial: 'Diputados Especiales',
+};
 module.exports = router;
+http://localhost:3000/api/reportes?eleccion=presidente&municipio=id
