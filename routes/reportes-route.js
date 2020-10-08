@@ -124,4 +124,3 @@ const listTypeElection = {
   diputadoEspecial: 'Diputados Especiales',
 };
 module.exports = router;
-http://localhost:3000/api/reportes?eleccion=presidente&municipio=id
