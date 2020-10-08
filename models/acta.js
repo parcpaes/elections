@@ -47,7 +47,7 @@ function validateActa(acta) {
     horaCierre: Joi.date().required(),
     codMesa: Joi.string().min(4).max(250).required(),
     empadronados: Joi.number().min(1).max(1024).required(),
-    observaciones: Joi.string().min(0),
+    observaciones: Joi.string(),
     estado: Joi.string().valid(...actaEstados),
     filename: Joi.string(),
   });

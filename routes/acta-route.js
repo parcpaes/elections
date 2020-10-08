@@ -7,7 +7,7 @@ const uploadFile = require('../middleware/gridfilesStorage-middleware');
 const _ = require('lodash');
 const Joi = require('joi');
 const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
-
+const actaEstados = ['Anulada', 'Verificado', 'Enviado'];
 const mongoDb = mongoose.connection;
 let gridfsbucket;
 // console.log(mongoDb.eventNames());
@@ -77,8 +77,9 @@ router.post('/', async (req, res) => {
 
 router.put('/:id', async (req, res) => {
   // console.log('update');
-  const { error } = validateActaUpdate(req.body);
-  if (error) return res.status(400).send(error.details[0].message);
+  req.body.observaciones = '';
+  // const { error } = validateActaUpdate(req.body);
+  // if (error) return res.status(400).send(error.details[0].message);
 
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
   if (!isActa) return res.status(400).send('Acta is not found');
@@ -128,7 +129,7 @@ function validateActaUpdate(acta) {
     codMesa: Joi.string().min(4).max(250).required(),
     empadronados: Joi.number().min(1).max(1024).required(),
     estado: Joi.string().valid(...actaEstados),
-    observaciones: Joi.string().min(0),
+    observaciones: Joi.string()
   });
   return schema.validate(acta);
 }
