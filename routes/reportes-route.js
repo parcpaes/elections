@@ -66,16 +66,27 @@ const idType = (result, value, key) => {
   return result;
 };
 
+const secondMatch = function (election) {
+  return {
+    $match: { 'candidaturas.candidatura': listTypeElection[election] }
+  }
+}
+
 router.get('/', async (req, res) => {
   const { error } = validateQuery(req.query);
+
   if (error) return res.status(400).send(error.details[0].message);
   try {
+
     const firstMatch = _.chain(req.query)
       .omit(['eleccion'])
       .reduce(idType, {})
       .value();
     firstMatch.estado = 'Verificado';
+
+    const election = secondMatch(req.query.eleccion);
     console.log(firstMatch);
+
     const votacion = await Votacion.aggregate([
       {
         $match: firstMatch,
@@ -83,9 +94,7 @@ router.get('/', async (req, res) => {
       {
         $unwind: '$candidaturas',
       },
-      {
-        $match: { 'candidaturas.candidatura': 'Presidente y Vicepresidente' },
-      },
+      election,
       groupPipe,
       projectPipe,
     ]);
@@ -118,9 +127,4 @@ function validateQuery(queryparams) {
   });
   return schema.validate(queryparams);
 }
-const listTypeElection = {
-  presidente: 'Presidente y Vicepresidente',
-  diputado: 'Diputados Uninominales',
-  diputadoEspecial: 'Diputados Especiales',
-};
 module.exports = router;
