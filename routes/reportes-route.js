@@ -68,16 +68,15 @@ const idType = (result, value, key) => {
 
 const secondMatch = function (election) {
   return {
-    $match: { 'candidaturas.candidatura': listTypeElection[election] }
-  }
-}
+    $match: { 'candidaturas.candidatura': listTypeElection[election] },
+  };
+};
 
 router.get('/', async (req, res) => {
   const { error } = validateQuery(req.query);
 
   if (error) return res.status(400).send(error.details[0].message);
   try {
-
     const firstMatch = _.chain(req.query)
       .omit(['eleccion'])
       .reduce(idType, {})

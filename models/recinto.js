@@ -11,7 +11,6 @@ const typeElection = ['Uninominal', 'Especial'];
 
 const circunscripcionSchemaU = circunscripcionSchema.clone();
 circunscripcionSchemaU.remove('provincias');
-circunscripcionSchemaU.remove('departamento');
 
 const provinciaSchemaU = provinciaSchema.clone();
 provinciaSchemaU.remove('circunscripcions');
@@ -19,6 +18,9 @@ provinciaSchemaU.remove('circunscripcions');
 const municipioSchemaU = municipioSchema.clone();
 municipioSchemaU.remove('provincia');
 municipioSchemaU.remove('circunscripcions');
+
+const estadoMesa = ['Sin Aperturar', 'Aperturado', 'Anulada'];
+const delegado = ['false', 'true'];
 
 const recintoSchema = new mongoose.Schema({
   institucion: {
@@ -90,6 +92,9 @@ const Recinto = mongoose.model('Recinto', recintoSchema);
 const mesaValidSchema = {
   mesa: Joi.number().min(1).max(512).required(),
   habilitados: Joi.number().min(1).max(1024).required(),
+  estado: Joi.string().validate(...estadoMesa),
+  delegado: Joi.string().validate(...delegado),
+  fecha: Joi.date(),
 };
 // eslint-disable-next-line require-jsdoc
 function validateRecinto(recinto) {

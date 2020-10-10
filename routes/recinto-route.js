@@ -5,6 +5,7 @@ const { Circunscripcion } = require('../models/circunscripcion');
 const { Provincia } = require('../models/provincia');
 const { Municipio } = require('../models/municipio');
 const { Localidad } = require('../models/localidad');
+const { validateMesa } = require('../models/mesa');
 const express = require('express');
 const _ = require('lodash');
 // eslint-disable-next-line new-cap
@@ -105,6 +106,31 @@ router.put('/:id', async (req, res) => {
     { new: true }
   );
 
+  if (!recinto)
+    return res.status(404).send('The recinto with the given ID was not found.');
+
+  res.send(recinto);
+});
+
+router.put('/:id/mesa', async (req, res) => {
+  const { error } = validateMesa(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const isMesa = await Recinto.findOne({
+    _id: req.params.id,
+    mesas: { $elemMatch: { mesa: req.body.mesa } },
+  });
+  if (!isMesa) return res.status(400).send('La Mesa o Recinto no existe');
+  const recinto = await Recinto.updateOne(
+    { _id: req.params.id, mesas: { $elemMatch: { mesa: req.body.mesa } } },
+    {
+      $set: {
+        'mesas.$.estado': req.body.estado,
+        'mesas.$.delegado': req.body.delegado,
+        'mesas.$.fecha': Date.now(),
+      },
+    }
+  );
   if (!recinto)
     return res.status(404).send('The recinto with the given ID was not found.');
 

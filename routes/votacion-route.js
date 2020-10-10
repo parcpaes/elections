@@ -1,13 +1,10 @@
 const { Votacion, validate } = require('../models/votacion');
 const express = require('express');
-const { Acta, validateActa } = require('../models/acta');
-const { Circunscripcion } = require('../models/circunscripcion');
+const { Acta } = require('../models/acta');
 const { validatePartido } = require('../models/partido');
 const { Recinto } = require('../models/recinto');
 const mongoose = require('mongoose');
 const _ = require('lodash');
-
-const uploadFile = require('../middleware/gridfilesStorage-middleware');
 
 const siglasParidos = [
   'CREEMOS',
@@ -21,16 +18,6 @@ const siglasParidos = [
 
 // eslint-disable-next-line new-cap
 const router = express.Router();
-
-const Joi = require('joi');
-const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
-
-const mongoDb = mongoose.connection;
-let gridfsbucket;
-// console.log(mongoDb.eventNames());
-mongoDb.once('open', function () {
-  gridfsbucket = new mongoose.mongo.GridFSBucket(mongoDb.db);
-});
 
 const idType = (id) => {
   // eslint-disable-next-line new-cap

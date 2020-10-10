@@ -49,17 +49,17 @@ const votacionSchema = new mongoose.Schema({
 const Votacion = mongoose.model('Votacion', votacionSchema);
 
 // eslint-disable-next-line require-jsdoc
-function validateVocacion(partido) {
+function validateVocacion(votacion) {
   const schema = Joi.object({
     // votos: Joi.number().min(0).max(1024).required,
     numeroMesa: Joi.string().min(4).max(250).required(),
     recinto: Joi.objectId().required(),
     acta: Joi.objectId().required(),
     estado: Joi.string()
-      .valid(...taskNames)
+      .valid(...votationEstado)
       .required(),
   });
-  return schema.validate(partido);
+  return schema.validate(votacion);
 }
 
 module.exports.Votacion = Votacion;

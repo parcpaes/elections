@@ -2,7 +2,7 @@ const mongoose = require('mongoose');
 const Joi = require('joi');
 // estado: [anulada:'true', cerrada[repeticion de nueva eleccion]]
 // fecha de 1 noviembre
-const actaEstados = ['Anulada', 'Verificado', 'Enviado'];
+const actaEstados = ['Anulada', 'Verificado', 'Enviado', 'Observado'];
 
 const actaSchema = new mongoose.Schema({
   horaApertura: {
