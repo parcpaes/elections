@@ -124,11 +124,11 @@ const groupPipeWiner = {
 };
 
 router.get('/recinto/:id', async (req, res) => {
-  const isRecinto = await Recinto.findById(req.params.id);
+  const isRecinto = await Votacion.findOne({ 'recinto._id': req.params.id });
   if (!isRecinto) return res.status(400).send('Recinto no existe');
   const votacion = await Votacion.aggregate([
     {
-      $match: { 'recinto._id': isRecinto._id },
+      $match: { 'recinto._id': ObjectId(req.params.id) },
     },
     {
       $unwind: '$candidaturas',
