@@ -1,6 +1,7 @@
 const { Votacion, validate } = require('../models/votacion');
 const express = require('express');
 const router = express.Router();
+const { Recinto } = require('../models/recinto');
 const { ObjectId } = require('mongoose').Types;
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
@@ -84,7 +85,7 @@ router.get('/', async (req, res) => {
     firstMatch.estado = 'Verificado';
 
     const election = secondMatch(req.query.eleccion);
-    console.log(firstMatch);
+    // console.log(firstMatch);
 
     const votacion = await Votacion.aggregate([
       {
@@ -101,6 +102,41 @@ router.get('/', async (req, res) => {
   } catch (error) {
     console.log(error);
   }
+});
+
+const groupPipeWiner = {
+  $group: {
+    _id: '$candidaturas.candidatura',
+    CREEMOS: { $push: '$candidaturas.CREEMOS' },
+    ADN: { $push: '$candidaturas.ADN' },
+    MASIPSP: { $push: '$candidaturas.MASIPSP' },
+    FPV: { $push: '$candidaturas.FPV' },
+    PANBOL: { $push: '$candidaturas.PANBOL' },
+    LIBRE21: { $push: '$candidaturas.LIBRE21' },
+    CC: { $push: '$candidaturas.CC' },
+    votosValidos: { $sum: '$candidaturas.votosValidos' },
+    votosBlancos: { $sum: '$candidaturas.votosBlancos' },
+    votosNullos: { $sum: '$candidaturas.votosNullos' },
+    actasValidas: { $sum: 1 },
+    listMesas: { $push: '$numeroMesa' },
+    mesas: { $first: '$recinto.totalMesas' },
+  },
+};
+
+router.get('/recinto/:id', async (req, res) => {
+  const isRecinto = await Recinto.findById(req.params.id);
+  if (!isRecinto) return res.status(400).send('Recinto no existe');
+  const votacion = await Votacion.aggregate([
+    {
+      $match: { 'recinto._id': isRecinto._id },
+    },
+    {
+      $unwind: '$candidaturas',
+    },
+    { $match: { 'candidaturas.candidatura': 'Presidente y Vicepresidente' } },
+    groupPipeWiner,
+  ]);
+  res.send(votacion);
 });
 
 router.get('/', async (req, res) => {
