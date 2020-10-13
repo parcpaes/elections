@@ -4,8 +4,10 @@ const express = require('express');
 const router = express.Router();
 const mongoose = require('mongoose');
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
+const access = require('../middleware/admin-middleware');
 const _ = require('lodash');
 const Joi = require('joi');
+
 const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
 const actaEstados = ['Anulada', 'Verificado', 'Enviado', 'Observado'];
 
@@ -21,43 +23,48 @@ router.get('/', async (req, res) => {
   res.send(acta);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', access('readAny', 'actas'), async (req, res) => {
   const acta = await Acta.findById(req.params.id);
   if (!acta)
     return res.status(404).send('The Acta with the given ID was not found.');
   res.send(acta);
 });
 
-router.get('/image/:id', async (req, res) => {
+router.get('/image/:id', access('readAny', 'actas'), async (req, res) => {
   const acta = await Acta.findById(req.params.id);
   if (!acta)
     return res.status(404).send('The Acta with the given ID was not found.');
   gridfsbucket.openDownloadStreamByName(acta.filename).pipe(res);
 });
 
-router.put('/image/:codMesa', uploadFile.single('file'), async (req, res) => {
-  try {
-    if (!req.file) return res.status(400).send('Imagen is null');
-    const imagerror = validateImage({ contentType: req.file.contentType });
-    if (imagerror.error)
-      return res.status(400).send(imagerror.error.details[0].message);
+router.put(
+  '/image/:codMesa',
+  access('readAny', 'actas/image'),
+  uploadFile.single('file'),
+  async (req, res) => {
+    try {
+      if (!req.file) return res.status(400).send('Imagen is null');
+      const imagerror = validateImage({ contentType: req.file.contentType });
+      if (imagerror.error)
+        return res.status(400).send(imagerror.error.details[0].message);
 
-    const acta = await Acta.findOneAndUpdate(
-      { codMesa: req.params.codMesa },
-      {
-        filename: req.file.filename,
-      },
-      { new: true }
-    );
+      const acta = await Acta.findOneAndUpdate(
+        { codMesa: req.params.codMesa },
+        {
+          filename: req.file.filename,
+        },
+        { new: true }
+      );
 
-    res.status(200).json(_.pick(acta, ['_id', 'codMesa']));
-  } catch (error) {
-    console.log(error);
-    res.status(400).send('Error uploading  imagen acta');
+      res.status(200).json(_.pick(acta, ['_id', 'codMesa']));
+    } catch (error) {
+      console.log(error);
+      res.status(400).send('Error uploading  imagen acta');
+    }
   }
-});
+);
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'actas'), async (req, res) => {
   const { error } = validateActa(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -76,7 +83,7 @@ router.post('/', async (req, res) => {
   res.send(acta);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'actas'), async (req, res) => {
   // console.log('update');
   req.body.observaciones = '';
   // const { error } = validateActaUpdate(req.body);
@@ -102,7 +109,7 @@ router.put('/:id', async (req, res) => {
   res.send(acta);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', access('deleteAny', 'actas'), async (req, res) => {
   const acta = await Acta.findByIdAndRemove(req.params.id);
   if (!acta)
     return res.status(404).send('The acta with the given ID was not found.');
@@ -129,7 +136,7 @@ function validateActaUpdate(acta) {
   const schema = Joi.object({
     codMesa: Joi.string().min(4).max(250).required(),
     empadronados: Joi.number().min(1).max(1024).required(),
-    estado: Joi.string().valid(...actaEstados)
+    estado: Joi.string().valid(...actaEstados),
   });
   return schema.validate(acta);
 }

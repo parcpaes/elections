@@ -1,5 +1,6 @@
 const { Circunscripcion, validate } = require('../models/circunscripcion');
 const { Departamento } = require('../models/departamento');
+const access = require('../middleware/admin-middleware');
 const express = require('express');
 
 // eslint-disable-next-line new-cap
@@ -8,7 +9,7 @@ const Fawn = require('fawn');
 const mongoose = require('mongoose');
 Fawn.init(mongoose);
 
-router.get('/', async (req, res) => {
+router.get('/', access('readAny', 'circunscripcions'), async (req, res) => {
   const circunscripcion = await Circunscripcion.find().populate(
     'provincias',
     'name'
@@ -16,7 +17,7 @@ router.get('/', async (req, res) => {
   res.send(circunscripcion);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', access('readAny', 'circunscripcions'), async (req, res) => {
   const circunscripcion = await Circunscripcion.findById(req.params.id);
   if (!circunscripcion)
     return res
@@ -25,7 +26,7 @@ router.get('/:id', async (req, res) => {
   res.send(circunscripcion);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'circunscripcions'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -47,41 +48,49 @@ router.post('/', async (req, res) => {
   res.send(circunscripcion);
 });
 
-router.put('/:id', async (req, res) => {
-  const { error } = validate(req.body);
+router.put(
+  '/:id',
+  access('updateAny', 'circunscripcions'),
+  async (req, res) => {
+    const { error } = validate(req.body);
 
-  const departamento = await Departamento.findById(req.body.departamentoId);
-  if (!departamento) return res.status(400).send('Invalid Departamento');
+    const departamento = await Departamento.findById(req.body.departamentoId);
+    if (!departamento) return res.status(400).send('Invalid Departamento');
 
-  if (error) return res.status(400).send(error.details[0].message);
+    if (error) return res.status(400).send(error.details[0].message);
 
-  const circunscripcion = await Circunscripcion.findByIdAndUpdate(
-    req.params.id,
-    {
-      name: req.body.name,
-      departamento: departamento,
-    },
-    { new: true }
-  );
+    const circunscripcion = await Circunscripcion.findByIdAndUpdate(
+      req.params.id,
+      {
+        name: req.body.name,
+        departamento: departamento,
+      },
+      { new: true }
+    );
 
-  if (!circunscripcion)
-    return res
-      .status(404)
-      .send('The circunscripcion with the given ID was not found.');
+    if (!circunscripcion)
+      return res
+        .status(404)
+        .send('The circunscripcion with the given ID was not found.');
 
-  res.send(circunscripcion);
-});
+    res.send(circunscripcion);
+  }
+);
 
-router.delete('/:id', async (req, res) => {
-  const circunscripcion = await Circunscripcion.findByIdAndRemove(
-    req.params.id
-  );
-  if (!circunscripcion)
-    return res
-      .status(404)
-      .send('The circunscripcion with the given ID was not found.');
+router.delete(
+  '/:id',
+  access('deleteAny', 'circunscripcions'),
+  async (req, res) => {
+    const circunscripcion = await Circunscripcion.findByIdAndRemove(
+      req.params.id
+    );
+    if (!circunscripcion)
+      return res
+        .status(404)
+        .send('The circunscripcion with the given ID was not found.');
 
-  res.send(circunscripcion);
-});
+    res.send(circunscripcion);
+  }
+);
 
 module.exports = router;

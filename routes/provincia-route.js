@@ -4,6 +4,7 @@ const {
   Circunscripcion,
   circunscripcionSchema,
 } = require('../models/circunscripcion');
+const access = require('../middleware/admin-middleware');
 
 const express = require('express');
 const mongoose = require('mongoose');
@@ -29,7 +30,7 @@ router.get('/:id', async (req, res) => {
   res.send(provincia);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'provincias'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -59,7 +60,7 @@ router.post('/', async (req, res) => {
   res.send(provincia);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'provincias'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -95,7 +96,7 @@ router.put('/:id', async (req, res) => {
   res.send(provincia);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', access('deleteAny', 'provincias'), async (req, res) => {
   const provincia = await Provincia.findByIdAndRemove(req.params.id);
   if (!provincia)
     return res

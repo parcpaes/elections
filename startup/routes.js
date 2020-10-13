@@ -13,10 +13,11 @@ const authRoute = require('../routes/auth-route');
 const voteRoure = require('../routes/votacion-route');
 const reportesRoute = require('../routes/reportes-route');
 const error = require('../middleware/error-middleware');
-
+const authVerify = require('../middleware/auth-middleware');
 module.exports = function (app) {
   app.use(express.json());
   app.use('/api/auth', authRoute);
+  // app.use(authVerify);
   app.use('/api/users', userRoute);
   app.use('/api/departamentos', departamentoRoute);
   app.use('/api/circunscripcions', circunscripcionRoute);

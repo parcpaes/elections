@@ -1,5 +1,6 @@
 const { Localidad, validate } = require('../models/localidad');
 const express = require('express');
+const access = require('../middleware/admin-middleware');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
@@ -16,7 +17,7 @@ router.get('/:id', async (req, res) => {
   res.send(localidad);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'localidades'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -32,7 +33,7 @@ router.post('/', async (req, res) => {
   res.send(localidad);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'localidades'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -52,7 +53,7 @@ router.put('/:id', async (req, res) => {
   res.send(localidad);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', access('deleteAny', 'localidades'), async (req, res) => {
   const localidad = await Localidad.findByIdAndRemove(req.params.id);
   if (!localidad)
     return res

@@ -1,13 +1,14 @@
 const auth = require('../middleware/auth-middleware');
 // const admin = require('../middleware/admin-middleware');
 // const config = require('config');
+const access = require('../middleware/admin-middleware');
 const _ = require('lodash');
 const { User, validate } = require('../models/user');
 const express = require('express');
 /* eslint-disable new-cap */
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', access('readAny', 'users'), async (req, res) => {
   const user = await User.find().select('-password');
   res.send(user);
 });
@@ -17,7 +18,7 @@ router.get('/me', auth, async (req, res) => {
   res.send(user);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'users'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
   const { name, fullName, telefono, password, rol, state } = req.body;
@@ -41,7 +42,7 @@ router.post('/', async (req, res) => {
   // res.header('x-auth-token',token).send(_.pick(user,['_id','name']));
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'users'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 

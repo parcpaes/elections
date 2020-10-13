@@ -2,6 +2,7 @@ const { Municipio, validate } = require('../models/municipio');
 const { Provincia } = require('../models/provincia');
 const { Circunscripcion } = require('../models/circunscripcion');
 const express = require('express');
+const access = require('../middleware/admin-middleware');
 const router = express.Router();
 const { ObjectId } = require('mongoose').Types;
 
@@ -24,7 +25,7 @@ router.get('/:id', async (req, res) => {
   res.send(municipio);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'municipios'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -60,7 +61,7 @@ function getCastObjectIds(value) {
   return ObjectId(value);
 }
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'municipios'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -98,7 +99,7 @@ router.put('/:id', async (req, res) => {
   res.send(municipio);
 });
 
-router.delete('/:id', async (req, res) => {
+router.delete('/:id', access('deleteAny', 'municipios'), async (req, res) => {
   console.log(req.params.id);
   const municipio = await Municipio.findByIdAndRemove(req.params.id);
   if (!municipio)

@@ -4,6 +4,7 @@ const { Acta } = require('../models/acta');
 const { validatePartido } = require('../models/partido');
 const { Recinto } = require('../models/recinto');
 const mongoose = require('mongoose');
+const access = require('../middleware/admin-middleware');
 const _ = require('lodash');
 
 const siglasParidos = [
@@ -24,7 +25,7 @@ const idType = (id) => {
   return mongoose.Types.ObjectId(id);
 };
 
-router.get('/recinto/:id', async (req, res) => {
+router.get('/recinto/:id', access('readAny', 'votacion'), async (req, res) => {
   if (!req.params.id) return res.status(400).send('id null');
   try {
     const votacion = await Votacion.aggregate([
@@ -46,12 +47,12 @@ router.get('/recinto/:id', async (req, res) => {
   }
 });
 
-router.get('/', async (req, res) => {
+router.get('/', access('readAny', 'votacion'), async (req, res) => {
   const votacion = await Votacion.find();
   res.send(votacion);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', access('readAny', 'votacion'), async (req, res) => {
   const votacion = await Votacion.findById(req.params.id);
   if (!votacion)
     return res
@@ -61,7 +62,7 @@ router.get('/:id', async (req, res) => {
   res.send(votacion);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'votacion'), async (req, res) => {
   const dataVote = req.body;
   const isActa = await Acta.findOne(
     { codMesa: dataVote.codMesa }
@@ -119,7 +120,7 @@ function validarSumaVotosValidso(voto) {
     throw Error('Suma de votos valido es incorrectos : ' + voto.candidatura);
 }
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'votacion'), async (req, res) => {
   const dataVote = req.body;
   const isActa = await Acta.findOne(
     { codMesa: dataVote.codMesa }

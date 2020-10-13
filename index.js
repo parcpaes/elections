@@ -25,6 +25,8 @@ require('./startup/validation');
 require('./startup/routes')(app);
 require('./startup/db')();
 
+// app.use(cors());
+
 app.use(express.static(path.join(__dirname, '/dist')));
 app.get('*', (req, res) => res.sendFile(path.join(__dirname)));
 

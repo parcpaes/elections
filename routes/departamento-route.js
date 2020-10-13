@@ -1,13 +1,14 @@
 const { Departamento, validate } = require('../models/departamento');
 const express = require('express');
+const access = require('../middleware/admin-middleware');
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', access('readAny', 'departamentos'), async (req, res) => {
   const departamento = await Departamento.find().sort('name');
   res.send(departamento);
 });
 
-router.get('/:id', async (req, res) => {
+router.get('/:id', access('readAny', 'departamentos'), async (req, res) => {
   const departamento = await Departamento.findById(req.params.id);
   if (!departamento)
     return res
@@ -17,7 +18,7 @@ router.get('/:id', async (req, res) => {
   res.send(departamento);
 });
 
-router.post('/', async (req, res) => {
+router.post('/', access('createAny', 'departamentos'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -34,7 +35,7 @@ router.post('/', async (req, res) => {
   res.send(departamento);
 });
 
-router.put('/:id', async (req, res) => {
+router.put('/:id', access('updateAny', 'departamentos'), async (req, res) => {
   const { error } = validate(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
@@ -54,14 +55,18 @@ router.put('/:id', async (req, res) => {
   res.send(departamento);
 });
 
-router.delete('/:id', async (req, res) => {
-  const departamento = await Departamento.findByIdAndRemove(req.params.id);
-  if (!departamento)
-    return res
-      .status(404)
-      .send('The departamento with the given ID was not found.');
+router.delete(
+  '/:id',
+  access('deleteAny', 'departamentos'),
+  async (req, res) => {
+    const departamento = await Departamento.findByIdAndRemove(req.params.id);
+    if (!departamento)
+      return res
+        .status(404)
+        .send('The departamento with the given ID was not found.');
 
-  res.send(departamento);
-});
+    res.send(departamento);
+  }
+);
 
 module.exports = router;

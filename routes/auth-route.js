@@ -5,7 +5,7 @@ const Joi = require('joi');
 const router = express.Router();
 
 // const roles = ['Admin','Operador','Jefe-Recinto'];
-const maxhours = 6 * 60 * 60 * 1000;
+const maxhours = 60 * 60 * 1000;
 
 router.post('/', async (req, res) => {
   // console.log(req.body);
@@ -14,7 +14,6 @@ router.post('/', async (req, res) => {
 
   const user = await User.findOne({ name: req.body.usuario });
   if (!user) return res.status(400).send('Invalid email or password');
-
 
   const validPassword = await User.login(req.body.usuario, req.body.password);
   if (!validPassword) return res.status(400).send('Invalid email or password');

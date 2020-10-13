@@ -82,7 +82,7 @@ const partidoSchema = new mongoose.Schema({
   },
   votosValidos: {
     type: Number,
-    required: true,
+    required: [true, 'Votos validos es menor que 0'],
     min: 1,
     max: 1024,
   },
@@ -96,17 +96,17 @@ function validatePartido(partido) {
     candidatura: Joi.string()
       .valid(...listTypeElection)
       .required(),
-    votosBlancos: Joi.number().min(0).max(512).required(),
-    votosNullos: Joi.number().min(0).max(512).required(),
-    CREEMOS: Joi.number().min(0).max(512).required(),
-    ADN: Joi.number().min(0).max(512).required(),
-    MASIPSP: Joi.number().min(0).max(512).required(),
-    FPV: Joi.number().min(0).max(512).required(),
-    PANBOL: Joi.number().min(0).max(512).required(),
-    LIBRE21: Joi.number().min(0).max(512).required(),
-    CC: Joi.number().min(0).max(512).required(),
+    votosBlancos: Joi.number().min(0).max(512).required().required(),
+    votosNullos: Joi.number().min(0).max(512).required().required(),
+    CREEMOS: Joi.number().min(0).max(512).required().required(),
+    ADN: Joi.number().min(0).max(512).required().required(),
+    MASIPSP: Joi.number().min(0).max(512).required().required(),
+    FPV: Joi.number().min(0).max(512).required().required(),
+    PANBOL: Joi.number().min(0).max(512).required().required(),
+    LIBRE21: Joi.number().min(0).max(512).required().required(),
+    CC: Joi.number().min(0).max(512).required().require(),
     JUNTOS: Joi.number().min(0).max(255),
-    votosValidos: Joi.number().min(1).max(1024),
+    votosValidos: Joi.number().min(1).max(1024).require(),
   });
   return schema.validate(partido);
 }

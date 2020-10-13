@@ -60,7 +60,7 @@ userSchema.methods.generateAuthToken = function () {
     { _id: this._id, rol: this.rol },
     config.get('jwtPrivateKey'),
     {
-      expiresIn: '3h',
+      expiresIn: '1h',
     }
   );
 };

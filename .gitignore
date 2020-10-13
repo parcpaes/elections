@@ -1,5 +1,6 @@
 node_modules
 *.log
 package-lock.jsongit
-*.swp
+*.js.swp
+*.http
 /dist

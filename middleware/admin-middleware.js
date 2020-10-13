@@ -1,11 +1,24 @@
-const roles = new Set(['Admin', 'Operador', 'Control', 'Reportes']);
-module.exports = function validRol(req, res, next) {
+// const roles = new Set(['Admin', 'Operador', 'Control', 'Reportes']);
+const { accessRoles } = require('../accesscontrol/listRoles');
+module.exports = function validRol(action, resource) {
   // 401 Unauthorized
   // 403 forbidden
   // admin
   // operador (votaciones(post),acta(post),trabajodores(post)).
   // control: (votaction, acta)verificar(put)
-  console.log(req.user);
-  if (!roles.has(req.user.rol)) return res.status(403).send('Access Denied');
-  return next();
+  return async (req, res, next) => {
+    try {
+      if (!req.user || !req.user.rol)
+        res.status(403).json({ error: 'No tienes acceso' });
+
+      const permission = accessRoles.can(req.user.rol)[action](resource);
+      if (!permission)
+        return res.status(403).json({ error: 'No tienes acceso' });
+
+      next();
+    } catch (error) {
+      console.log(error);
+      next(error);
+    }
+  };
 };
