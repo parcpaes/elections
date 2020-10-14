@@ -12,6 +12,7 @@ const userRoute = require('../routes/user-route');
 const authRoute = require('../routes/auth-route');
 const voteRoure = require('../routes/votacion-route');
 const reportesRoute = require('../routes/reportes-route');
+const taskRoute = require('../routes/task-route');
 const error = require('../middleware/error-middleware');
 const authVerify = require('../middleware/auth-middleware');
 module.exports = function (app) {
@@ -25,6 +26,7 @@ module.exports = function (app) {
   app.use('/api/municipios', municipioRoute);
   app.use('/api/localidades', localidadRoute);
   app.use('/api/recintos', recintoRoute);
+  app.use('/api/tasks',taskRoute);
   // app.use('/api/partidos', partidoRoute);
   app.use('/api/actas', actaRoute);
   app.use('/api/votacion', voteRoure);

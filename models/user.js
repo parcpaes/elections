@@ -96,3 +96,4 @@ function validateUser(user) {
 
 module.exports.User = User;
 module.exports.validate = validateUser;
+module.exports.userSchema = userSchema;

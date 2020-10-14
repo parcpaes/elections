@@ -1,7 +1,9 @@
-const { Task, validate } = require('../models/task');
+const { Task, validateTask } = require('../models/task');
 const express = require('express');
 const { User } = require('../models/user');
-const { Acta } = require('../models/acta');
+const { Recinto } = require('../models/recinto');
+const {ObjectId} = require('mongoose').Types;
+const Joi = require('joi');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -11,39 +13,84 @@ router.get('/', async (req, res) => {
 });
 
 router.get('/user/:id', async (req, res) => {
-  const task = await Task.findOne({ user: req.params.id });
+  const task = await Task.findOne({ user: req.params.id }).populate('user','_id fullName state');
   if (!task)
     return res.status(404).send('The task with the given ID was not found.');
-
+    
   res.send(task);
 });
+
+function getCastObjectIds(value) {
+  return ObjectId(value);
+}
 
 router.post('/', async (req, res) => {
-  const { error } = validate(req.body);
+  console.log('post task');
+  const { error } = validateTask(req.body);
   if (error) return res.status(400).send(error.details[0].message);
 
-  const isUser = await User.findOne({ _id: req.body.userId });
-  if (isUser) return res.status(400).send('User already register');
+  const isUserTask = await Task.findOne({ user: req.body.userId });
+  if (isUserTask) return res.status(400).send('User already register in task collection');
 
-  const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
-  if (isActa) return res.status(400).send('Acta already register');
+  const user = await User.findOne({ _id: req.body.userId });
+  if(!user) return res.status(400).send('User no existe in User collections');
 
-  const task = new Task({
-    operacion: req.body.operacion,
-    user: {
-      _id: user._id,
-      fullName: user.fullName,
-    },
-    acta: {
-      _id: acta._id,
-      codMesa: acta.codMesa,
-    },
+  const listRecintosId = req.body.recintos.map(
+    getCastObjectIds
+  );
+
+  if (!listRecintosId)
+    return res.status(400).send('task.recintos is empty');
+
+  const recintos = await Recinto.find({
+    _id: { $in: listRecintosId },
   });
 
+  const task = new Task({
+    user: user._id,
+    recintos: recintos
+  });
   await task.save();
-
   res.send(task);
 });
+
+router.put('/user/:id', async (req,res)=>{
+  const { error } = validateTaskUpdate(req.body);
+  if (error) return res.status(400).send(error.details[0].message);
+
+  const isUserTask = await Task.findOne({ user: req.params.id });
+  if (!isUserTask) return res.status(400).send('Usuario no exisite in task collections');
+
+  const user = await User.findOne({ _id: req.params.id });
+  if(!user) return res.status(400).send('User no existe in User collection');
+  console.log(req.body.recintos);
+  const listRecintosId = req.body.recintos.map(
+    getCastObjectIds
+  );
+
+  if (!listRecintosId)
+    return res.status(400).send('task.recintos is empty');
+
+  const recintos = await Recinto.find({
+    _id: { $in: listRecintosId },
+  });
+
+  const task = await Task.findOneAndUpdate({user: user._id},
+    {
+      $set:{
+        user: user._id,
+        recintos: recintos
+      }
+    },
+  { new: true }
+  );
+  if (!task)
+    return res
+      .status(404)
+      .send('The taks with the given ID was not found.');
+  res.send(task);
+
+})
 
 router.delete('/:id', async (req, res) => {
   const task = await Task.findByIdAndRemove(req.params.id);
@@ -52,5 +99,11 @@ router.delete('/:id', async (req, res) => {
 
   res.send(task);
 });
+function validateTaskUpdate(task) {
+  const schema = Joi.object({
+    recintos: Joi.array().min(1).max(50).required()
+  });
+  return schema.validate(task);
+}
 
 module.exports = router;

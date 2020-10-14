@@ -87,6 +87,30 @@ const recintoSchema = new mongoose.Schema({
 //   next();
 // });
 
+// mongoose.Schema.prototype.remove = function(path) {
+//   if (typeof path === 'string') {
+//     path = [path];
+//   }
+//   if (Array.isArray(path)) {
+//     path.forEach(function(name) {
+//       if (this.path(name)) {
+//         delete this.paths[name];
+
+//         // update the tree
+//         var subpaths = name.split(/\./),
+//             last = subpaths.pop(),
+//             branch = this.tree;
+
+//         subpaths.forEach(function(sub, i) {
+//           branch = branch[sub];
+//         });
+
+//         delete branch[last];
+//       }
+//     }, this);
+//   }
+// };
+
 const Recinto = mongoose.model('Recinto', recintoSchema);
 
 const mesaValidSchema = {
