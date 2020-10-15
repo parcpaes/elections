@@ -8,15 +8,12 @@ const Joi = require('joi');
 const router = express.Router();
 
 router.get('/', async (req, res) => {
-  const task = await Task.find();
+  const task = await Task.find().populate('user','_id fullName state');
   res.send(task);
 });
 
 router.get('/user/:id', async (req, res) => {
-  const task = await Task.findOne({ user: req.params.id }).populate('user','_id fullName state');
-  if (!task)
-    return res.status(404).send('The task with the given ID was not found.');
-    
+  const task = await Task.findOne({ user: req.params.id }).populate('user','_id fullName state');    
   res.send(task);
 });
 
@@ -45,9 +42,9 @@ router.post('/', async (req, res) => {
   const recintos = await Recinto.find({
     _id: { $in: listRecintosId },
   });
-
+  console.log(user._id);
   const task = new Task({
-    user: user._id,
+    user: ObjectId(user._id),
     recintos: recintos
   });
   await task.save();
@@ -101,7 +98,7 @@ router.delete('/:id', async (req, res) => {
 });
 function validateTaskUpdate(task) {
   const schema = Joi.object({
-    recintos: Joi.array().min(1).max(50).required()
+    recintos: Joi.array().min(1).max(10).required()
   });
   return schema.validate(task);
 }

@@ -9,12 +9,11 @@ recintoSchemaU.remove('localizacion');
 const taskSchema = new mongoose.Schema({
   user: {
     type: mongoose.Schema.Types.ObjectId,
-    ref:'User',
-    required:true
+    ref:'User'
   },
   recintos: [{
     type: recintoSchemaU,
-    required:true
+    required:true,
   }],
 });
 
@@ -24,7 +23,7 @@ const Task = mongoose.model('Task', taskSchema);
 function validateTask(task) {
   const schema = Joi.object({
     userId: Joi.objectId().required(),
-    recintos: Joi.array().min(1).max(50).required()
+    recintos: Joi.array().min(1).max(10).required()
   });
   return schema.validate(task);
 }
