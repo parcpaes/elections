@@ -1,6 +1,6 @@
 const mongoose = require('mongoose');
 // const winston = require('winston');
-const mongoURL = 'mongodb+srv://paes:9876543210@cluster0.5etmh.mongodb.net/election?retryWrites=true&w=majority';
+const mongoURL = 'mongodb://localhost/election';
 
 module.exports = function conectionDB() {
   mongoose
