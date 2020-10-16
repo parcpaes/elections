@@ -5,11 +5,7 @@ const delegado = ['false', 'true'];
 const mesaSchema = new mongoose.Schema({
   mesa: {
     type: Number,
-    required: true,
-    // unique: true,
-    // trim:true,
-    // sparse: true,
-    // index:true,
+    required: true,    
     min: 1,
     max: 512,
   },
