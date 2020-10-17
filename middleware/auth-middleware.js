@@ -3,8 +3,7 @@ const config = require('config');
 
 module.exports = function authVerifyToken(req, res, next) {
   try {
-    const token = req.cookies.authjwt;
-    console.log(token);
+    const token = req.cookies.authjwt;    
     if (!token) {
       return res.status(401).send('Acceso denegado');
     }
