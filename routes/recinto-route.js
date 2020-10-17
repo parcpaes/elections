@@ -9,6 +9,8 @@ const access = require('../middleware/admin-middleware');
 const { validateMesa } = require('../models/mesa');
 const express = require('express');
 const _ = require('lodash');
+const moment = require('moment-timezone');
+const timezone = moment.tz('America/La_Paz');
 // eslint-disable-next-line new-cap
 const router = express.Router();
 
@@ -131,7 +133,7 @@ router.put(
         $set: {
           'mesas.$.estado': req.body.estado,
           'mesas.$.delegado': req.body.delegado,
-          'mesas.$.fecha': Date.now(),
+          'mesas.$.fecha': timezone.format()
         },
       }
     );

@@ -5,9 +5,9 @@ const router = express.Router();
 const mongoose = require('mongoose');
 const uploadFile = require('../middleware/gridfilesStorage-middleware');
 const access = require('../middleware/admin-middleware');
+const {Operation} = require('../models/operation');
 const _ = require('lodash');
 const Joi = require('joi');
-
 const images = ['image/png', 'image/jpeg', 'image/bmp', 'image/webp'];
 const actaEstados = ['Anulada', 'Verificado', 'Enviado', 'Observado'];
 
@@ -64,6 +64,7 @@ router.put(
   }
 );
 
+
 router.post('/', access('createAny', 'actas'), async (req, res) => {
   const { error } = validateActa(req.body);
   if (error) return res.status(400).send(error.details[0].message);
@@ -92,6 +93,14 @@ router.put('/:id', access('updateAny', 'actas'), async (req, res) => {
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
   if (!isActa) return res.status(400).send('Acta is not found');
 
+  const operacion = await Operation.save({
+    operacion: req.body.estado,
+    user: req.user.id,
+    acta: isActa._id,
+    ipadress:req.ip
+  });
+  operacion.save();
+  console.log(operacion);
   const acta = await Acta.findByIdAndUpdate(
     req.params.id,
     {

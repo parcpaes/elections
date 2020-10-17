@@ -1,32 +1,36 @@
 const Joi = require('joi');
 Joi.objectId = require('joi-objectid')(Joi);
 const mongoose = require('mongoose');
-const { userSchema } = require('./user');
-const { actaSchema } = require('./acta');
-const taskNames = ['Enviado', 'Verificado', 'Anulado'];
+const taskNames = ['Enviado', 'Verificado', 'Anulada', 'Observado'];
+const moment = require('moment-timezone');
+const timezone = moment.tz('America/La_Paz');
 
-const taskSchema = new mongoose.Schema({
+const operationSchema = new mongoose.Schema({
   operacion: {
     type: String,
     required: true,
     enum: taskNames,
   },
   user: {
-    type: userSchema,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'User'
   },
   acta: {
-    type: actaSchema,
-    required: true,
+    type: mongoose.Schema.Types.ObjectId,
+    ref:'Acta'
   },
   hora: {
     type: Date,
     required: true,
-    default: Date.now(),
+    default: timezone.format()
   },
+  ipadress:{
+    type:String;
+    required:true
+  }
 });
 
-const Task = mongoose.model('Task', taskSchema);
+const Operation = mongoose.model('Task', operationSchema);
 
 // eslint-disable-next-line require-jsdoc
 function validateTask(task) {
@@ -41,6 +45,6 @@ function validateTask(task) {
   return schema.validate(task);
 }
 
-module.exports.Task = Task;
-exports.validate = validateTask;
-module.exports.taskSchema = taskSchema;
+module.exports.Operation = Operation;
+exports.validate = validateOpracion;
+module.exports.operationSchema = operationSchema;

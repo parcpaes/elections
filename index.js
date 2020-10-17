@@ -17,8 +17,8 @@ app.use(bodyParser.json());
 
 // app.set('view engine', 'ejs');
 app.use(cors());
+app.set('trust proxy',true);
 app.use(cookieParser());
-
 // require('./startup/logging');
 require('./startup/config-jwt')();
 require('./startup/validation');

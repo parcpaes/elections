@@ -10,8 +10,13 @@ module.exports = function validRol(action, resource) {
     try {
       if (!req.user || !req.user.rol) return res.status(403).json({ error: 'No tienes acceso' });
       const permission = accessRoles.can(req.user.rol)[action](resource);
-      if (!permission)
+      if (!permission){
+        console.log(req.user.rol);
+        if(req.user.rol==='Admin'){
+          next(); 
+        }
         return res.status(403).json({ error: 'No tienes acceso' });
+      }
       next();//
     } catch (error) {
       console.log(error);
