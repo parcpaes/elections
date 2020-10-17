@@ -133,7 +133,7 @@ router.put(
         $set: {
           'mesas.$.estado': req.body.estado,
           'mesas.$.delegado': req.body.delegado,
-          'mesas.$.fecha': timezone.format()
+          'mesas.$.fecha': timezone.format(),
         },
       }
     );

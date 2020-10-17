@@ -8,17 +8,18 @@ module.exports = function validRol(action, resource) {
   // control: (votaction, acta)verificar(put)
   return async (req, res, next) => {
     try {
-      if (!req.user || !req.user.rol) return res.status(403).json({ error: 'No tienes acceso' });
+      if (!req.user || !req.user.rol)
+        return res.status(403).json({ error: 'No tienes acceso' });
       const permission = accessRoles.can(req.user.rol)[action](resource);
-      if (!permission){
+      if (!permission) {
         console.log(req.user.rol);
-        if(req.user.rol==='Admin'){
+        if (req.user.rol === 'Admin') {
           console.log('admin');
           next();
         }
         return res.status(403).json({ error: 'No tienes acceso' });
       }
-      next();//
+      next(); //
     } catch (error) {
       console.log(error);
       next();

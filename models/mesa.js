@@ -4,7 +4,7 @@ const estadoMesa = ['Sin Aperturar', 'Aperturado', 'Anulada'];
 const mesaSchema = new mongoose.Schema({
   mesa: {
     type: Number,
-    required: true,    
+    required: true,
     min: 1,
     max: 512,
   },
@@ -22,7 +22,6 @@ const mesaSchema = new mongoose.Schema({
   },
   delegado: {
     type: String,
-    enum: delegado,
     default: 'false',
   },
   fecha: {
