@@ -13,7 +13,8 @@ module.exports = function validRol(action, resource) {
       if (!permission){
         console.log(req.user.rol);
         if(req.user.rol==='Admin'){
-          next(); 
+          console.log('admin');
+          next();
         }
         return res.status(403).json({ error: 'No tienes acceso' });
       }

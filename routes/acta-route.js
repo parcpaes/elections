@@ -13,7 +13,7 @@ const actaEstados = ['Anulada', 'Verificado', 'Enviado', 'Observado'];
 
 const mongoDb = mongoose.connection;
 let gridfsbucket;
-// console.log(mongoDb.eventNames());
+// console.log(mongoDb.eventNames());b
 mongoDb.once('open', function () {
   gridfsbucket = new mongoose.mongo.GridFSBucket(mongoDb.db);
 });
@@ -72,6 +72,16 @@ router.post('/', access('createAny', 'actas'), async (req, res) => {
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
   if (isActa) return res.status(400).send('Acta already register');
 
+  const operation = await Operation.save({
+    operacion: req.body.estado,
+    user: req.user.id,
+    acta: isActa._id,
+    ipadress:req.ip
+  });
+  operation.save();
+  console.log(operation);
+
+
   const acta = new Acta({
     codMesa: req.body.codMesa,
     horaApertura: req.body.horaApertura,
@@ -93,14 +103,15 @@ router.put('/:id', access('updateAny', 'actas'), async (req, res) => {
   const isActa = await Acta.findOne({ codMesa: req.body.codMesa });
   if (!isActa) return res.status(400).send('Acta is not found');
 
-  const operacion = await Operation.save({
+  const operation = await Operation.save({
     operacion: req.body.estado,
     user: req.user.id,
     acta: isActa._id,
     ipadress:req.ip
   });
-  operacion.save();
-  console.log(operacion);
+  operation.save();
+  console.log(operation);
+
   const acta = await Acta.findByIdAndUpdate(
     req.params.id,
     {

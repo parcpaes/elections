@@ -1,7 +1,6 @@
 const Joi = require('joi');
 const mongoose = require('mongoose');
 const estadoMesa = ['Sin Aperturar', 'Aperturado', 'Anulada'];
-const delegado = ['false', 'true'];
 const mesaSchema = new mongoose.Schema({
   mesa: {
     type: Number,
@@ -40,7 +39,7 @@ function validateMesa(mesa) {
   const schema = Joi.object({
     mesa: Joi.number().min(1).max(512).required(),
     estado: Joi.string().valid(...estadoMesa),
-    delegado: Joi.string().valid(...delegado),
+    delegado: Joi.string().minx(1).max(255),
   });
   return schema.validate(mesa);
 }
