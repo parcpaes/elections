@@ -31,7 +31,6 @@ const actaSchema = new mongoose.Schema({
   },
   observaciones: {
     type: String,
-    minlength: 0,
   },
   filename: {
     type: String,
